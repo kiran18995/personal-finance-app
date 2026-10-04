@@ -122,6 +122,7 @@ fun DashboardScreen(
         onNavigateToImportStatement: () -> Unit,
         onNavigateToAddBankAccount: () -> Unit = {},
         onNavigateToHistory: () -> Unit = {},
+        onNavigateToAddTransaction: () -> Unit = {},
         onEditCard: (Card) -> Unit = {}
 ) {
     val totalIncome by viewModel.totalIncome.collectAsStateWithLifecycle()

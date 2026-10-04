@@ -190,6 +190,7 @@ fun AppNavigation(
                         onNavigateToImportStatement = { navController.navigate(Routes.IMPORT_STATEMENT) },
                         onNavigateToAddBankAccount = { navController.navigate(Routes.ADD_BANK_ACCOUNT) },
                         onNavigateToHistory = { navController.navigate(Routes.HISTORY) },
+                        onNavigateToAddTransaction = { navController.navigate(Routes.ADD_TRANSACTION) },
                         onEditCard = { card ->
                             dashboardViewModel.selectedCard = card
                             navController.navigate(Routes.ADD_CARD)
@@ -368,7 +369,8 @@ fun AppNavigation(
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
                         .navigationBarsPadding()
-                        .padding(start = 24.dp, end = 24.dp, bottom = 18.dp)
+                        .padding(start = 24.dp, end = 24.dp, bottom = 18.dp),
+                    onAddTransaction = { navController.navigate(Routes.ADD_TRANSACTION) }
                 )
             }
         }
@@ -379,7 +381,8 @@ fun AppNavigation(
 private fun FloatingGlassDock(
     currentRoute: String?,
     onNavigate: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAddTransaction: () -> Unit
 ) {
     val isDark = androidx.compose.foundation.isSystemInDarkTheme()
     val dockBg = if (isDark) Color(0xF2141324) else Color(0xF2FFFFFF)
@@ -419,6 +422,28 @@ private fun FloatingGlassDock(
                 isSelected = currentRoute == Routes.HISTORY,
                 onClick = { onNavigate(Routes.HISTORY) }
             )
+            
+            // Center Glowing + Button
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(Color(0xFF8B5CF6), Color(0xFF6D28D9))
+                        )
+                    )
+                    .clickable { onAddTransaction() },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = "Add Transaction",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            
             DockItem(
                 icon = Icons.Filled.CreditCard,
                 contentDescription = "Cards",
