@@ -1,0 +1,11 @@
+{
+  "auth": {
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "My Finance",
+        "supportEmail": "kiraninbox18995@gmail.com"
+      }
+    }
+  }
+}

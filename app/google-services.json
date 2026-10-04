@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "937418914043",
+    "project_id": "personal-finance-kiran",
+    "storage_bucket": "personal-finance-kiran.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937418914043:android:35d3e7140f029dff56d85e",
+        "android_client_info": {
+          "package_name": "com.example.financeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_wDXJbjJrYs9RJZfMrV2ix1f9hCZu6Js"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
