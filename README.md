@@ -18,6 +18,14 @@ Kiran's Finance leverages a completely custom, cutting-edge **Glassmorphism Desi
 
 ---
 
+## 📸 Screenshots
+
+| Dashboard | Cards Wallet | History |
+| :---: | :---: | :---: |
+| <img src="README_ASSETS/dashboard.png" width="250"/> | <img src="README_ASSETS/cards.png" width="250"/> | <img src="README_ASSETS/history.png" width="250"/> |
+
+---
+
 ## 🚀 Features
 
 *   **Comprehensive Dashboard:** View your Total Balance, Income vs. Expenses, and Quick Actions at a glance.
@@ -29,13 +37,17 @@ Kiran's Finance leverages a completely custom, cutting-edge **Glassmorphism Desi
 
 ---
 
-## 🛠 Tech Stack
+## 🛠 Tech Stack & Architecture
 
-*   **Language:** Kotlin
-*   **UI Toolkit:** Jetpack Compose (Modern Declarative UI)
-*   **Architecture:** MVVM (Model-View-ViewModel) + Clean Architecture
-*   **State Management:** StateFlow & Coroutines
-*   **Backend / Database:** Firebase Authentication & Firestore Database
+*   **Language:** Kotlin 1.9+
+*   **UI Toolkit:** Jetpack Compose (100% Declarative UI)
+*   **Architecture:** Clean Architecture + MVVM (Model-View-ViewModel)
+*   **State Management:** StateFlow & Kotlin Coroutines for asynchronous, reactive data streams
+*   **Navigation:** Jetpack Navigation Compose with custom physics-based `FastOutSlowIn` transitions
+*   **UI Styling:** Custom Glassmorphism UI framework building upon Material 3 primitives with `Modifier.graphicsLayer` advanced render effects
+*   **Database & Auth:** Firebase Firestore (NoSQL Document DB) & Firebase Authentication
+*   **Background Processing:** WorkManager for secure, offline-capable syncing of statements
+*   **Dependency Injection:** Manual/Hilt ready structure
 
 ---
 
