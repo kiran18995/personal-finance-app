@@ -20,9 +20,9 @@ Kiran's Finance leverages a completely custom, cutting-edge **Glassmorphism Desi
 
 ## 📸 Screenshots
 
-| Dashboard | Cards Wallet | History |
-| :---: | :---: | :---: |
-| <img src="README_ASSETS/dashboard.png" width="250"/> | <img src="README_ASSETS/cards.png" width="250"/> | <img src="README_ASSETS/history.png" width="250"/> |
+| Dashboard | Cards Wallet | History | Profile |
+| :---: | :---: | :---: | :---: |
+| <img src="README_ASSETS/dashboard.png" width="220"/> | <img src="README_ASSETS/cards.png" width="220"/> | <img src="README_ASSETS/history.png" width="220"/> | <img src="README_ASSETS/profile.png" width="220"/> |
 
 ---
 
