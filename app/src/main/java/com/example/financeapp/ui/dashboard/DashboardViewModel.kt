@@ -9,6 +9,7 @@ import com.example.financeapp.data.Emi
 import com.example.financeapp.data.Expense
 import com.example.financeapp.data.FinanceRepository
 import com.example.financeapp.data.Income
+import com.example.financeapp.domain.usecase.ManageTransactionUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -36,7 +37,10 @@ private fun TimeRange.toStartEpochMs(): Long = when (this) {
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DashboardViewModel(private val repo: FinanceRepository) : ViewModel() {
+class DashboardViewModel(
+    private val repo: FinanceRepository,
+    private val manageTransactionUseCase: ManageTransactionUseCase = ManageTransactionUseCase(repo, repo)
+) : ViewModel() {
 
     private val _timeRange = MutableStateFlow(TimeRange.THIS_MONTH)
     val timeRange: StateFlow<TimeRange> = _timeRange.asStateFlow()
@@ -126,9 +130,9 @@ class DashboardViewModel(private val repo: FinanceRepository) : ViewModel() {
         viewModelScope.launch {
             val now = System.currentTimeMillis()
             if (isIncome) {
-                repo.addIncome(Income(source = category, amount = amount, date = now))
+                manageTransactionUseCase.recordIncome(Income(source = category, amount = amount, date = now))
             } else {
-                repo.addExpense(
+                manageTransactionUseCase.recordExpense(
                     Expense(
                         category = category,
                         amount = amount,

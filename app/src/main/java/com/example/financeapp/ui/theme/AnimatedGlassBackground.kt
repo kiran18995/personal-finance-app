@@ -13,6 +13,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import android.content.res.Configuration
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.financeapp.ui.theme.FinanceAppTheme
 
 @Composable
 fun AnimatedGlassBackground(modifier: Modifier = Modifier) {
@@ -132,4 +135,18 @@ fun AnimatedGlassBackground(modifier: Modifier = Modifier) {
             )
         }
     }
+}
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "AnimatedGlassBackground Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+private fun AnimatedGlassBackgroundLightPreview() {
+    FinanceAppTheme { AnimatedGlassBackground() }
+}
+
+@Preview(name = "AnimatedGlassBackground Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun AnimatedGlassBackgroundDarkPreview() {
+    FinanceAppTheme { AnimatedGlassBackground() }
 }

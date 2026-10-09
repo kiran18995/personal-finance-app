@@ -3,12 +3,32 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <group
-        android:translateX="34"
-        android:translateY="34">
-        <!-- Elegant "K" Logo Path -->
-        <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M 0,0 L 8,0 L 8,40 L 0,40 Z M 12,20 L 26,0 L 36,0 L 20,22 L 38,40 L 28,40 L 12,24 L 12,20 Z" />
-    </group>
+
+    <!-- Minimalist Glow Subtle Circle -->
+    <path
+        android:fillColor="#153860B2"
+        android:pathData="M54,18 A36,36 0 1,0 54,90 A36,36 0 1,0 54,18 Z" />
+
+    <!-- Minimalist Card Contour -->
+    <path
+        android:strokeColor="#60A5FA"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000"
+        android:pathData="M38,36 H70 A6,6 0 0,1 76,42 V66 A6,6 0 0,1 70,72 H38 A6,6 0 0,1 32,66 V42 A6,6 0 0,1 38,36 Z" />
+
+    <!-- Minimalist Upward Trend Line -->
+    <path
+        android:strokeColor="#34D399"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000"
+        android:pathData="M36,63 L46,52 L54,58 L68,43" />
+
+    <!-- Peak Trend Dot -->
+    <path
+        android:fillColor="#34D399"
+        android:pathData="M68,43 m-3.5,0 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0" />
 </vector>

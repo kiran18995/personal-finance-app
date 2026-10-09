@@ -7,7 +7,7 @@ import com.example.financeapp.data.FinanceRepository
 import com.example.financeapp.data.Income
 import com.example.financeapp.data.Expense
 import com.example.financeapp.data.ParsedTransaction
-import com.example.financeapp.data.PdfParserService
+import com.example.financeapp.data.StatementParser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,7 +23,7 @@ sealed class StatementState {
 
 class StatementViewModel(
     private val repository: FinanceRepository,
-    private val pdfParserService: PdfParserService
+    private val statementParser: StatementParser
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<StatementState>(StatementState.Idle)
@@ -33,7 +33,7 @@ class StatementViewModel(
         viewModelScope.launch {
             _uiState.value = StatementState.Parsing
             try {
-                val result = pdfParserService.parsePdf(uri, password)
+                val result = statementParser.parsePdf(uri, password)
                 _uiState.value = StatementState.Review(result.transactions, result.finalBalance)
             } catch (e: Exception) {
                 // If wrong password

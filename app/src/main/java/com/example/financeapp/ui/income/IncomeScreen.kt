@@ -1,8 +1,7 @@
 package com.example.financeapp.ui.income
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
+import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -35,33 +33,71 @@ import com.example.financeapp.data.FinanceRepository
 import com.example.financeapp.data.Income
 import com.example.financeapp.ui.theme.*
 import com.example.financeapp.ui.dashboard.DashboardColors
+import com.example.financeapp.ui.common.AmountText
 import com.example.financeapp.util.IncomeSources
 import com.example.financeapp.util.toINR
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import kotlinx.coroutines.launch
+
+import com.example.financeapp.data.IncomeRepository
+
+@Composable
+fun IncomeScreen(
+    viewModel: IncomeViewModel,
+    onBack: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    IncomeScreenContent(
+        uiState = uiState,
+        onAddIncome = { amount, source, desc ->
+            viewModel.addIncome(
+                source = source,
+                amount = amount,
+                date = System.currentTimeMillis(),
+                description = desc
+            )
+        },
+        onDeleteIncome = { viewModel.deleteIncome(it) },
+        onBack = onBack
+    )
+}
+
+@Composable
+fun IncomeScreen(
+    repo: IncomeRepository,
+    onBack: () -> Unit
+) {
+    val viewModel = remember(repo) { IncomeViewModel(repo) }
+    IncomeScreen(viewModel = viewModel, onBack = onBack)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IncomeScreen(repo: FinanceRepository, onBack: () -> Unit) {
-    val incomes by repo.getAllIncomes().collectAsStateWithLifecycle(emptyList())
+fun IncomeScreenContent(
+    uiState: IncomeUiState,
+    onAddIncome: (amount: Double, source: String, description: String) -> Unit,
+    onDeleteIncome: (Income) -> Unit,
+    onBack: () -> Unit
+) {
     var showDialog by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-
-    val totalIncome = remember(incomes) { incomes.sumOf { it.amount } }
+    val incomes = uiState.incomes
+    val totalIncome = uiState.totalIncome
 
     Scaffold(
-        containerColor = DashboardColors.bg,
+        containerColor = DashboardColors.bg(),
         topBar = {
             TopAppBar(
-                title = { Text("Income Streams", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary) },
+                title = { Text("Income Streams", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary()) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = DashboardColors.textPrimary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = DashboardColors.textPrimary())
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DashboardColors.bg,
-                    titleContentColor = DashboardColors.textPrimary,
-                    navigationIconContentColor = DashboardColors.textPrimary
+                    containerColor = DashboardColors.bg(),
+                    titleContentColor = DashboardColors.textPrimary(),
+                    navigationIconContentColor = DashboardColors.textPrimary()
                 )
             )
         },
@@ -80,7 +116,7 @@ fun IncomeScreen(repo: FinanceRepository, onBack: () -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(DashboardColors.bg)
+                .background(DashboardColors.bg())
                 .padding(padding)
         ) {
             // Ambient glow
@@ -93,13 +129,13 @@ Column(modifier = Modifier.fillMaxSize()) {
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                         .shadow(10.dp, RoundedCornerShape(22.dp), spotColor = Emerald.copy(alpha = 0.2f)),
                     shape = RoundedCornerShape(22.dp),
-                    color = DashboardColors.surface,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border)
+                    color = DashboardColors.surface(),
+                    border = BorderStroke(1.dp, DashboardColors.border())
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Brush.linearGradient(listOf(EmeraldDim.copy(alpha = 0.4f), DashboardColors.surface)))
+                            .background(Brush.linearGradient(listOf(EmeraldDim.copy(alpha = 0.4f), DashboardColors.surface())))
                             .padding(20.dp)
                     ) {
                         Row(
@@ -117,7 +153,7 @@ Column(modifier = Modifier.fillMaxSize()) {
                                     color = Emerald
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
-                                Text("${incomes.size} active source(s)", fontSize = 11.sp, color = DashboardColors.textSecondary)
+                                Text("${incomes.size} active source(s)", fontSize = 11.sp, color = DashboardColors.textSecondary())
                             }
 
                             Box(
@@ -150,8 +186,8 @@ Column(modifier = Modifier.fillMaxSize()) {
                             ) {
                                 Icon(Icons.AutoMirrored.Filled.TrendingUp, null, Modifier.size(36.dp), tint = Emerald)
                             }
-                            Text("No income recorded yet", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary)
-                            Text("Tap the + button to add your salary or earnings", fontSize = 13.sp, color = DashboardColors.textSecondary)
+                            Text("No income recorded yet", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary())
+                            Text("Tap the + button to add your salary or earnings", fontSize = 13.sp, color = DashboardColors.textSecondary())
                         }
                     }
                 } else {
@@ -164,8 +200,8 @@ Column(modifier = Modifier.fillMaxSize()) {
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(16.dp),
-                                color = DashboardColors.surface,
-                                border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.surface)
+                                color = DashboardColors.surface(),
+                                border = BorderStroke(1.dp, DashboardColors.surface())
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -175,6 +211,7 @@ Column(modifier = Modifier.fillMaxSize()) {
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Row(
+                                        modifier = Modifier.weight(1f),
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
@@ -188,23 +225,36 @@ Column(modifier = Modifier.fillMaxSize()) {
                                         ) {
                                             Text("💰", fontSize = 18.sp)
                                         }
-                                        Column {
-                                            Text(income.source, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary)
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = income.source,
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = DashboardColors.textPrimary(),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
                                             if (income.description.isNotEmpty()) {
-                                                Text(income.description, fontSize = 12.sp, color = DashboardColors.textSecondary)
+                                                Text(
+                                                    text = income.description,
+                                                    fontSize = 12.sp,
+                                                    color = DashboardColors.textSecondary(),
+                                                    maxLines = 2,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
                                             }
                                         }
                                     }
 
-                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                        Text(
-                                            text = "+${income.amount.toINR()}",
-                                            color = Emerald,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.ExtraBold
-                                        )
+                                    Spacer(modifier = Modifier.width(8.dp))
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        AmountText(amount = income.amount, isIncome = true)
                                         IconButton(
-                                            onClick = { scope.launch { repo.deleteIncome(income) } },
+                                            onClick = { onDeleteIncome(income) },
                                             modifier = Modifier.size(32.dp)
                                         ) {
                                             Icon(Icons.Default.DeleteOutline, "Delete", tint = Crimson.copy(alpha = 0.8f), modifier = Modifier.size(18.dp))
@@ -223,10 +273,8 @@ Column(modifier = Modifier.fillMaxSize()) {
         AddIncomeDialog(
             onDismiss = { showDialog = false },
             onAdd = { amount, source, desc ->
-                scope.launch {
-                    repo.addIncome(Income(amount = amount, source = source, description = desc))
-                    showDialog = false
-                }
+                onAddIncome(amount, source, desc)
+                showDialog = false
             }
         )
     }
@@ -240,30 +288,30 @@ fun AddIncomeDialog(onDismiss: () -> Unit, onAdd: (Double, String, String) -> Un
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = DashboardColors.surface,
+        containerColor = DashboardColors.surface(),
         shape = RoundedCornerShape(22.dp),
-        title = { Text("Add Income", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary) },
+        title = { Text("Add Income", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary()) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 OutlinedTextField(
                     value = amount,
                     onValueChange = { amount = it },
-                    label = { Text("Amount (₹)", color = DashboardColors.textSecondary) },
+                    label = { Text("Amount (₹)", color = DashboardColors.textSecondary()) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Emerald,
-                        unfocusedBorderColor = DashboardColors.border,
-                        focusedTextColor = DashboardColors.textPrimary,
-                        unfocusedTextColor = DashboardColors.textPrimary,
+                        unfocusedBorderColor = DashboardColors.border(),
+                        focusedTextColor = DashboardColors.textPrimary(),
+                        unfocusedTextColor = DashboardColors.textPrimary(),
                         cursorColor = Emerald,
-                        focusedContainerColor = DashboardColors.surface,
-                        unfocusedContainerColor = DashboardColors.surface
+                        focusedContainerColor = DashboardColors.surface(),
+                        unfocusedContainerColor = DashboardColors.surface()
                     ),
                     shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Text("Source Category", fontSize = 12.sp, color = DashboardColors.textSecondary, fontWeight = FontWeight.SemiBold)
+                Text("Source Category", fontSize = 12.sp, color = DashboardColors.textSecondary(), fontWeight = FontWeight.SemiBold)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -277,14 +325,14 @@ fun AddIncomeDialog(onDismiss: () -> Unit, onAdd: (Double, String, String) -> Un
                                 .weight(1f)
                                 .clip(RoundedCornerShape(10.dp))
                                 .clickable { selectedSource = src },
-                            color = if (isSel) Emerald else DashboardColors.surface,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, if (isSel) Emerald else DashboardColors.border)
+                            color = if (isSel) Emerald else DashboardColors.surface(),
+                            border = BorderStroke(1.dp, if (isSel) Emerald else DashboardColors.border())
                         ) {
                             Text(
                                 text = src,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isSel) Color.White else DashboardColors.textSecondary,
+                                color = if (isSel) Color.White else DashboardColors.textSecondary(),
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
@@ -295,15 +343,15 @@ fun AddIncomeDialog(onDismiss: () -> Unit, onAdd: (Double, String, String) -> Un
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Notes / Description", color = DashboardColors.textSecondary) },
+                    label = { Text("Notes / Description", color = DashboardColors.textSecondary()) },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Emerald,
-                        unfocusedBorderColor = DashboardColors.border,
-                        focusedTextColor = DashboardColors.textPrimary,
-                        unfocusedTextColor = DashboardColors.textPrimary,
+                        unfocusedBorderColor = DashboardColors.border(),
+                        focusedTextColor = DashboardColors.textPrimary(),
+                        unfocusedTextColor = DashboardColors.textPrimary(),
                         cursorColor = Emerald,
-                        focusedContainerColor = DashboardColors.surface,
-                        unfocusedContainerColor = DashboardColors.surface
+                        focusedContainerColor = DashboardColors.surface(),
+                        unfocusedContainerColor = DashboardColors.surface()
                     ),
                     shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -321,7 +369,59 @@ fun AddIncomeDialog(onDismiss: () -> Unit, onAdd: (Double, String, String) -> Un
             ) { Text("Save Income", fontWeight = FontWeight.Bold) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel", color = DashboardColors.textSecondary) }
+            TextButton(onClick = onDismiss) { Text("Cancel", color = DashboardColors.textSecondary()) }
         }
     )
+}
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "IncomeScreen Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+private fun IncomeScreenLightPreview() {
+    FinanceAppTheme {
+        IncomeScreenContent(
+            uiState = IncomeUiState(
+                incomes = listOf(
+                    Income(id = 1, amount = 75000.0, source = "Salary", description = "Monthly Tech Corp Paycheck"),
+                    Income(id = 2, amount = 12000.0, source = "Freelancing", description = "Mobile App Design")
+                ),
+                totalIncome = 87000.0
+            ),
+            onAddIncome = { _, _, _ -> },
+            onDeleteIncome = {},
+            onBack = {}
+        )
+    }
+}
+
+@Preview(name = "IncomeScreen Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun IncomeScreenDarkPreview() {
+    FinanceAppTheme {
+        IncomeScreenContent(
+            uiState = IncomeUiState(
+                incomes = listOf(
+                    Income(id = 1, amount = 75000.0, source = "Salary", description = "Monthly Tech Corp Paycheck"),
+                    Income(id = 2, amount = 12000.0, source = "Freelancing", description = "Mobile App Design")
+                ),
+                totalIncome = 87000.0
+            ),
+            onAddIncome = { _, _, _ -> },
+            onDeleteIncome = {},
+            onBack = {}
+        )
+    }
+}
+
+@Preview(name = "AddIncomeDialog Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+private fun AddIncomeDialogLightPreview() {
+    FinanceAppTheme { AddIncomeDialog(onDismiss = {}, onAdd = { _, _, _ -> }) }
+}
+
+@Preview(name = "AddIncomeDialog Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun AddIncomeDialogDarkPreview() {
+    FinanceAppTheme { AddIncomeDialog(onDismiss = {}, onAdd = { _, _, _ -> }) }
 }

@@ -7,6 +7,8 @@ import android.hardware.SensorManager
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import android.content.Context
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -53,7 +55,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -75,11 +76,13 @@ import com.example.financeapp.ui.theme.Emerald
 import com.example.financeapp.ui.theme.Ink100
 import com.example.financeapp.ui.theme.Ink300
 import com.example.financeapp.util.toINR
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.financeapp.ui.theme.FinanceAppTheme
 
 @Composable
 fun rememberDeviceTilt(): Offset {
     val context = LocalContext.current
-    val sensorManager = remember { context.getSystemService(android.content.Context.SENSOR_SERVICE) as SensorManager }
+    val sensorManager = remember { context.getSystemService(Context.SENSOR_SERVICE) as SensorManager }
     var tiltOffset by remember { mutableStateOf(Offset(0f, 0f)) }
 
     DisposableEffect(sensorManager) {
@@ -122,7 +125,6 @@ fun DashboardScreen(
         onNavigateToImportStatement: () -> Unit,
         onNavigateToAddBankAccount: () -> Unit = {},
         onNavigateToHistory: () -> Unit = {},
-        onNavigateToAddTransaction: () -> Unit = {},
         onEditCard: (Card) -> Unit = {}
 ) {
     val totalIncome by viewModel.totalIncome.collectAsStateWithLifecycle()
@@ -156,7 +158,7 @@ fun DashboardScreen(
     Box(
             modifier =
                     Modifier.fillMaxSize()
-                            .background(DashboardColors.bg) 
+                            .background(DashboardColors.bg()) 
     ) {
 
 
@@ -164,8 +166,9 @@ fun DashboardScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .statusBarsPadding()
                 .verticalScroll(rememberScrollState())
-                .padding(top = 90.dp, bottom = 110.dp)
+                .padding(bottom = 110.dp)
         ) {
             // ─── 1. Header Bar ──────────────────────────────────────────
             Row(
@@ -179,22 +182,22 @@ fun DashboardScreen(
                         text = "Dashboard",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = DashboardColors.textPrimary,
+                        color = DashboardColors.textPrimary(),
                         letterSpacing = (-0.5).sp
                 )
 
                 // Notification Bell Pill
                 Surface(
                         shape = CircleShape,
-                        color = DashboardColors.surface,
-                        border = BorderStroke(1.dp, DashboardColors.border),
+                        color = DashboardColors.surface(),
+                        border = BorderStroke(1.dp, DashboardColors.border()),
                         modifier = Modifier.size(42.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                                 Icons.Filled.NotificationsNone,
                                 contentDescription = "Notifications",
-                                tint = DashboardColors.textPrimary,
+                                tint = DashboardColors.textPrimary(),
                                 modifier = Modifier.size(20.dp)
                         )
                     }
@@ -263,9 +266,9 @@ private fun HeroGradientBalanceCard(balance: Double, totalIncome: Double, totalE
             shape = RoundedCornerShape(26.dp),
             color = Color.Transparent,
             border =
-                    androidx.compose.foundation.BorderStroke(
+                    BorderStroke(
                             1.dp,
-                            Color(0xFF9333EA).copy(alpha = 0.4f)
+                            Color(0xFF3B82F6).copy(alpha = 0.4f)
                     )
     ) {
         Box(
@@ -276,8 +279,8 @@ private fun HeroGradientBalanceCard(balance: Double, totalIncome: Double, totalE
                                         Brush.linearGradient(
                                                 colors =
                                                         listOf(
-                                                                Color(0xFF9333EA).copy(alpha = 0.35f),
-                                                                Color(0xFF6B1D9E).copy(alpha = 0.15f)
+                                                                Color(0xFF3B82F6).copy(alpha = 0.35f),
+                                                                Color(0xFF1E40AF).copy(alpha = 0.15f)
                                                         )
                                         )
                                 )
@@ -298,7 +301,7 @@ private fun HeroGradientBalanceCard(balance: Double, totalIncome: Double, totalE
                         text = "Total balance",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color(0xFFDDD6FE).copy(alpha = 0.85f),
+                        color = Color(0xFFBFDBFE).copy(alpha = 0.85f),
                         letterSpacing = 0.4.sp
                 )
 
@@ -319,11 +322,11 @@ private fun HeroGradientBalanceCard(balance: Double, totalIncome: Double, totalE
                 Surface(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(32.dp),
-                        color = DashboardColors.glassBg,
+                        color = DashboardColors.glassBg(),
                         border =
-                                androidx.compose.foundation.BorderStroke(
+                                BorderStroke(
                                         1.dp,
-                                        DashboardColors.glassBorder
+                                        DashboardColors.glassBorder()
                                 )
                 ) {
                     Row(
@@ -364,7 +367,7 @@ private fun HeroGradientBalanceCard(balance: Double, totalIncome: Double, totalE
                                         text = incText,
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = DashboardColors.textPrimary
+                                        color = DashboardColors.textPrimary()
                                 )
                             }
                         }
@@ -374,7 +377,7 @@ private fun HeroGradientBalanceCard(balance: Double, totalIncome: Double, totalE
                                 modifier =
                                         Modifier.width(1.dp)
                                                 .height(38.dp)
-                                                .background(DashboardColors.glassBorder)
+                                                .background(DashboardColors.glassBorder())
                         )
 
                         // Expenses
@@ -408,7 +411,7 @@ private fun HeroGradientBalanceCard(balance: Double, totalIncome: Double, totalE
                                         text = expText,
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = DashboardColors.textPrimary
+                                        color = DashboardColors.textPrimary()
                                 )
                             }
                         }
@@ -433,14 +436,14 @@ private fun MetallCardSection(cards: List<Card>, onAddAccount: () -> Unit, onEdi
                     text = "Your Cards",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = DashboardColors.textPrimary
+                    color = DashboardColors.textPrimary()
             )
 
             Text(
                     text = "Scroll",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
-                    color = DashboardColors.textSecondary
+                    color = DashboardColors.textSecondary()
             )
         }
 
@@ -458,17 +461,17 @@ private fun MetallCardSection(cards: List<Card>, onAddAccount: () -> Unit, onEdi
                 Surface(
                     modifier = Modifier.width(200.dp).height(124.dp).bounceClick { onAddAccount() },
                     shape = RoundedCornerShape(18.dp),
-                    color = DashboardColors.surface,
-                    border = BorderStroke(1.dp, DashboardColors.border)
+                    color = DashboardColors.surface(),
+                    border = BorderStroke(1.dp, DashboardColors.border())
                 ) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Icon(Icons.Filled.Add, contentDescription = "Add", tint = DashboardColors.textPrimary)
+                        Icon(Icons.Filled.Add, contentDescription = "Add", tint = DashboardColors.textPrimary())
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text("Add Card", color = DashboardColors.textPrimary, fontSize = 14.sp)
+                        Text("Add Card", color = DashboardColors.textPrimary(), fontSize = 14.sp)
                     }
                 }
             } else {
@@ -526,7 +529,7 @@ private fun MetallicCreditCard(holderName: String, last4: String, isTitanium: Bo
                             .bounceClick { onClick() },
             shape = RoundedCornerShape(18.dp),
             color = Color.Transparent,
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.4f))
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.4f))
     ) {
         Box(modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(18.dp)).background(metallicBrush).padding(14.dp)) {
             Column(
@@ -642,7 +645,7 @@ private fun QuickActionsSection(
                 text = "Quick Actions",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = DashboardColors.textPrimary
+                color = DashboardColors.textPrimary()
         )
 
         Spacer(modifier = Modifier.height(14.dp))
@@ -651,8 +654,8 @@ private fun QuickActionsSection(
         Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(22.dp),
-                color = DashboardColors.surface,
-                border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border)
+                color = DashboardColors.surface(),
+                border = BorderStroke(1.dp, DashboardColors.border())
         ) {
             Row(
                     modifier =
@@ -666,7 +669,7 @@ private fun QuickActionsSection(
                         label = "Calculator",
                         icon = Icons.Filled.Calculate,
                         tileColor = Color(0xFF26123D),
-                        accentColor = Color(0xFFA78BFA),
+                        accentColor = Color(0xFF60A5FA),
                         onClick = onCalculator
                 )
                 QuickActionTile(
@@ -733,7 +736,7 @@ private fun QuickActionTile(
                 shape = RoundedCornerShape(14.dp),
                 color = Color.Transparent,
                 border =
-                        androidx.compose.foundation.BorderStroke(
+                        BorderStroke(
                                 1.dp,
                                 accentColor.copy(alpha = 0.4f)
                         ),
@@ -769,7 +772,7 @@ private fun QuickActionTile(
                 text = label,
                 fontSize = 10.5.sp,
                 fontWeight = FontWeight.Medium,
-                color = DashboardColors.textPrimary,
+                color = DashboardColors.textPrimary(),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.clickable(onClick = onClick)
         )
@@ -789,14 +792,14 @@ private fun RecentTransactionsSection(transactions: List<RecentTransaction>, onS
                     text = "Recent Transactions",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = DashboardColors.textPrimary
+                    color = DashboardColors.textPrimary()
             )
 
             Text(
                     text = "See all",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFFA78BFA),
+                    color = Color(0xFF60A5FA),
                     modifier = Modifier.clickable(onClick = onSeeAll)
             )
         }
@@ -808,7 +811,7 @@ private fun RecentTransactionsSection(transactions: List<RecentTransaction>, onS
         if (displayList.isEmpty()) {
             Text(
                 text = "No recent transactions. Tap + to add.",
-                color = DashboardColors.textSecondary,
+                color = DashboardColors.textSecondary(),
                 modifier = Modifier.padding(vertical = 20.dp).fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
@@ -843,7 +846,7 @@ private fun RecentTransactionsSection(transactions: List<RecentTransaction>, onS
                             text = tx.title,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = DashboardColors.textPrimary
+                            color = DashboardColors.textPrimary()
                     )
                 }
 
@@ -852,12 +855,12 @@ private fun RecentTransactionsSection(transactions: List<RecentTransaction>, onS
                         text = "$prefix₹ ${String.format("%,.0f", tx.amount)}",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = DashboardColors.textPrimary
+                        color = DashboardColors.textPrimary()
                 )
             }
 
             if (index < displayList.lastIndex) {
-                HorizontalDivider(color = DashboardColors.border, thickness = 1.dp)
+                HorizontalDivider(color = DashboardColors.border(), thickness = 1.dp)
             }
         }
         }
@@ -899,6 +902,36 @@ fun TransactionItem(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = if (isIncome) Emerald else Ink100
+        )
+    }
+}
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "TransactionItem Light", uiMode = Configuration.UI_MODE_NIGHT_NO, showBackground = true)
+@Composable
+private fun TransactionItemLightPreview() {
+    FinanceAppTheme {
+        TransactionItem(
+            title = "Salary",
+            subtitle = "Oct 10, 2026",
+            amount = 75000.0,
+            isIncome = true,
+            account = "HDFC Bank"
+        )
+    }
+}
+
+@Preview(name = "TransactionItem Dark", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+private fun TransactionItemDarkPreview() {
+    FinanceAppTheme {
+        TransactionItem(
+            title = "Rent",
+            subtitle = "Oct 5, 2026",
+            amount = 25000.0,
+            isIncome = false,
+            account = "SBI"
         )
     }
 }

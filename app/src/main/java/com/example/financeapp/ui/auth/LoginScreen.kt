@@ -32,6 +32,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.tooling.preview.Preview
+import android.content.res.Configuration
+import android.widget.Toast
+import com.example.financeapp.ui.components.AppLogo
 import com.example.financeapp.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,7 +71,7 @@ fun LoginScreen(
                 .size(400.dp)
                 .offset(x = (-100).dp, y = (-100).dp)
                 .blur(140.dp)
-                .background(Brush.radialGradient(listOf(Violet700.copy(0.5f), Color.Transparent)))
+                .background(Brush.radialGradient(listOf(Blue700.copy(0.5f), Color.Transparent)))
         )
         Box(
             modifier = Modifier
@@ -91,38 +95,7 @@ fun LoginScreen(
                 visible = visible,
                 enter = fadeIn(tween(700)) + slideInVertically(tween(700)) { -60 }
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    // Logo pill
-                    Box(
-                        modifier = Modifier
-                            .size(88.dp)
-                            .clip(RoundedCornerShape(24.dp))
-                            .background(
-                                brush = Brush.linearGradient(
-                                    listOf(Color(0xFF3B0764), Violet600)
-                                )
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("₹", fontSize = 44.sp, fontWeight = FontWeight.ExtraBold, color = Color.White)
-                    }
-
-                    Spacer(Modifier.height(20.dp))
-
-                    Text(
-                        "My Finance",
-                        style = MaterialTheme.typography.displaySmall,
-                        color = Ink100,
-                        fontWeight = FontWeight.ExtraBold
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        "Your complete financial companion",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Ink300,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                AppLogo(size = 84.dp, showTitle = true, titleText = "My Finance")
             }
 
             Spacer(Modifier.height(48.dp))
@@ -155,7 +128,7 @@ fun LoginScreen(
                                 modifier = Modifier
                                     .weight(1f)
                                     .clip(RoundedCornerShape(10.dp))
-                                    .background(if (selected) Violet700 else Color.Transparent)
+                                    .background(if (selected) Blue700 else Color.Transparent)
                                     .clickableNoRipple { isSignUp = (i == 1) }
                                     .padding(vertical = 10.dp),
                                 contentAlignment = Alignment.Center
@@ -176,7 +149,7 @@ fun LoginScreen(
                         onValueChange = { email = it },
                         label = "Email address",
                         leadingIcon = {
-                            Icon(Icons.Filled.Email, null, tint = Violet400, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Filled.Email, null, tint = Blue400, modifier = Modifier.size(20.dp))
                         },
                         keyboardType = KeyboardType.Email
                     )
@@ -187,7 +160,7 @@ fun LoginScreen(
                         onValueChange = { password = it },
                         label = "Password",
                         leadingIcon = {
-                            Icon(Icons.Filled.Lock, null, tint = Violet400, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Filled.Lock, null, tint = Blue400, modifier = Modifier.size(20.dp))
                         },
                         trailingIcon = {
                             IconButton(onClick = { showPassword = !showPassword }) {
@@ -213,7 +186,7 @@ fun LoginScreen(
                             .fillMaxWidth()
                             .height(54.dp),
                         shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Violet600),
+                        colors = ButtonDefaults.buttonColors(containerColor = Blue600),
                         elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                     ) {
                         Text(
@@ -238,8 +211,8 @@ fun LoginScreen(
                     // Google Sign-In
                     OutlinedButton(
                         onClick = {
-                            android.widget.Toast.makeText(
-                                context, "Google Sign-In coming soon", android.widget.Toast.LENGTH_SHORT
+                            Toast.makeText(
+                                context, "Google Sign-In coming soon", Toast.LENGTH_SHORT
                             ).show()
                         },
                         modifier = Modifier.fillMaxWidth().height(52.dp),
@@ -255,8 +228,8 @@ fun LoginScreen(
                     // Phone Auth
                     OutlinedButton(
                         onClick = {
-                            android.widget.Toast.makeText(
-                                context, "Phone Auth coming soon", android.widget.Toast.LENGTH_SHORT
+                            Toast.makeText(
+                                context, "Phone Auth coming soon", Toast.LENGTH_SHORT
                             ).show()
                         },
                         modifier = Modifier.fillMaxWidth().height(52.dp),
@@ -294,7 +267,7 @@ fun LoginScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    CircularProgressIndicator(color = Violet400, strokeWidth = 3.dp)
+                    CircularProgressIndicator(color = Blue400, strokeWidth = 3.dp)
                     Text("Signing you in…", style = MaterialTheme.typography.bodySmall, color = Ink200)
                 }
             }
@@ -353,11 +326,11 @@ fun PremiumTextField(
         shape = RoundedCornerShape(14.dp),
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor   = Violet500,
+            focusedBorderColor   = Blue500,
             unfocusedBorderColor = Ink500,
-            focusedLabelColor    = Violet400,
+            focusedLabelColor    = Blue400,
             unfocusedLabelColor  = Ink300,
-            cursorColor          = Violet400,
+            cursorColor          = Blue400,
             focusedTextColor     = Ink100,
             unfocusedTextColor   = Ink100,
             focusedContainerColor   = Ink800,
@@ -373,3 +346,21 @@ private fun Modifier.clickableNoRipple(onClick: () -> Unit): Modifier =
         indication = null,
         onClick = onClick
     )
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "PremiumTextField Light", uiMode = Configuration.UI_MODE_NIGHT_NO, showBackground = true)
+@Preview(name = "PremiumTextField Dark", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+private fun PremiumTextFieldPreview() {
+    FinanceAppTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            PremiumTextField(
+                value = "user@example.com",
+                onValueChange = {},
+                label = "Email address"
+            )
+        }
+    }
+}
+

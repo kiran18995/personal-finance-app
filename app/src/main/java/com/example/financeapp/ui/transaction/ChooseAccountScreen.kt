@@ -26,7 +26,8 @@ import androidx.compose.ui.unit.sp
 import com.example.financeapp.data.BankAccount
 import com.example.financeapp.ui.theme.*
 import com.example.financeapp.ui.dashboard.DashboardColors
-import com.example.financeapp.util.toINR
+import android.content.res.Configuration
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ChooseAccountScreen(
@@ -41,7 +42,7 @@ fun ChooseAccountScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = DashboardColors.bg
+        color = DashboardColors.bg()
     ) {
         Column(
             modifier = Modifier
@@ -60,10 +61,10 @@ fun ChooseAccountScreen(
                     modifier = Modifier
                         .size(42.dp)
                         .clip(CircleShape)
-                        .background(DashboardColors.surface)
-                        .border(1.dp, DashboardColors.border, CircleShape)
+                        .background(DashboardColors.surface())
+                        .border(1.dp, DashboardColors.border(), CircleShape)
                 ) {
-                    Icon(Icons.Filled.Close, contentDescription = "Close", tint = DashboardColors.textPrimary)
+                    Icon(Icons.Filled.Close, contentDescription = "Close", tint = DashboardColors.textPrimary())
                 }
 
                 Text(
@@ -78,7 +79,7 @@ fun ChooseAccountScreen(
                     modifier = Modifier
                         .size(42.dp)
                         .clip(CircleShape)
-                        .background(Violet600)
+                        .background(Blue600)
                 ) {
                     Icon(Icons.Filled.Check, contentDescription = "Confirm", tint = Color.White)
                 }
@@ -90,7 +91,7 @@ fun ChooseAccountScreen(
                 text = "AVAILABLE ACCOUNTS",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
-                color = DashboardColors.textSecondary,
+                color = DashboardColors.textSecondary(),
                 letterSpacing = 1.sp
             )
 
@@ -99,8 +100,8 @@ fun ChooseAccountScreen(
             if (bankAccounts.isEmpty()) {
                 Surface(
                     shape = RoundedCornerShape(18.dp),
-                    color = DashboardColors.surface,
-                    border = BorderStroke(1.dp, DashboardColors.border),
+                    color = DashboardColors.surface(),
+                    border = BorderStroke(1.dp, DashboardColors.border()),
                     modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
                 ) {
                     Column(
@@ -108,9 +109,9 @@ fun ChooseAccountScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(Icons.Filled.AccountBalance, contentDescription = null, tint = DashboardColors.textSecondary, modifier = Modifier.size(36.dp))
-                        Text("No Bank Accounts Connected", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary, fontSize = 15.sp)
-                        Text("Add an account to link your transactions.", color = DashboardColors.textSecondary, fontSize = 12.sp)
+                        Icon(Icons.Filled.AccountBalance, contentDescription = null, tint = DashboardColors.textSecondary(), modifier = Modifier.size(36.dp))
+                        Text("No Bank Accounts Connected", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary(), fontSize = 15.sp)
+                        Text("Add an account to link your transactions.", color = DashboardColors.textSecondary(), fontSize = 12.sp)
                     }
                 }
             } else {
@@ -120,7 +121,7 @@ fun ChooseAccountScreen(
                 ) {
                     items(bankAccounts.size) { index ->
                         val account = bankAccounts[index]
-                        val colors = listOf(Violet500, Sapphire, Emerald, Amber)
+                        val colors = listOf(Blue500, Sapphire, Emerald, Amber)
                         val color = colors[index % colors.size]
 
                         AccountItem(
@@ -145,16 +146,16 @@ fun ChooseAccountScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = DashboardColors.surface),
+                colors = ButtonDefaults.buttonColors(containerColor = DashboardColors.surface()),
                 shape = RoundedCornerShape(20.dp),
-                border = BorderStroke(1.dp, Violet500.copy(alpha = 0.4f))
+                border = BorderStroke(1.dp, Blue500.copy(alpha = 0.4f))
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(Icons.Filled.Add, contentDescription = null, tint = Violet400)
-                    Text("Add new card or account", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary)
+                    Icon(Icons.Filled.Add, contentDescription = null, tint = Blue400)
+                    Text("Add new card or account", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary())
                 }
             }
         }
@@ -178,8 +179,8 @@ fun AccountItem(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(18.dp),
-        color = if (isSelected) DashboardColors.surface else DashboardColors.surface,
-        border = BorderStroke(1.dp, if (isSelected) Violet500 else DashboardColors.border)
+        color = if (isSelected) DashboardColors.surface() else DashboardColors.surface(),
+        border = BorderStroke(1.dp, if (isSelected) Blue500 else DashboardColors.border())
     ) {
         Row(
             modifier = Modifier
@@ -192,8 +193,8 @@ fun AccountItem(
                     modifier = Modifier
                         .size(46.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(DashboardColors.surface)
-                        .border(1.dp, DashboardColors.border, RoundedCornerShape(12.dp)),
+                        .background(DashboardColors.surface())
+                        .border(1.dp, DashboardColors.border(), RoundedCornerShape(12.dp)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(Icons.Filled.Wallet, contentDescription = null, tint = Emerald)
@@ -205,16 +206,16 @@ fun AccountItem(
             Spacer(modifier = Modifier.width(14.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(name, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary)
+                Text(name, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary())
                 Spacer(modifier = Modifier.height(2.dp))
-                Text(holder, fontSize = 12.sp, color = DashboardColors.textSecondary)
+                Text(holder, fontSize = 12.sp, color = DashboardColors.textSecondary())
             }
 
             Text(
                 text = "₹${String.format("%,.2f", balance)}",
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (isSelected) Violet400 else DashboardColors.textPrimary
+                color = if (isSelected) Blue400 else DashboardColors.textPrimary()
             )
         }
     }
@@ -238,3 +239,22 @@ fun AccountIconBox(color: Color, text: String) {
         )
     }
 }
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "ChooseAccountScreen Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "ChooseAccountScreen Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ChooseAccountScreenPreview() {
+    FinanceAppTheme {
+        ChooseAccountScreen(
+            bankAccounts = listOf(
+                BankAccount(id = 1, bankName = "HDFC Bank", accountNumber = "•••• 4892", accountType = "Savings", currentBalance = 148500.0),
+                BankAccount(id = 2, bankName = "ICICI Bank", accountNumber = "•••• 9102", accountType = "Salary", currentBalance = 75200.0)
+            ),
+            onDismiss = {},
+            onAccountSelected = {}
+        )
+    }
+}
+

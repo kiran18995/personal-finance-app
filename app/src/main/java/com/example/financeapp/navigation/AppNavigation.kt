@@ -9,7 +9,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Spacer
@@ -37,15 +36,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.foundation.border
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.financeapp.ui.theme.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -62,16 +58,19 @@ import com.example.financeapp.ui.cards.CardsScreen
 import com.example.financeapp.ui.dashboard.DashboardScreen
 import com.example.financeapp.ui.dashboard.DashboardViewModel
 import com.example.financeapp.ui.emi.EmiScreen
+import com.example.financeapp.ui.emi.EmiViewModel
 import com.example.financeapp.ui.expense.ExpenseScreen
+import com.example.financeapp.ui.expense.ExpenseViewModel
 import com.example.financeapp.ui.history.HistoryScreen
 import com.example.financeapp.ui.income.IncomeScreen
+import com.example.financeapp.ui.income.IncomeViewModel
 import com.example.financeapp.ui.investment.InvestmentScreen
+import com.example.financeapp.ui.investment.InvestmentViewModel
 import com.example.financeapp.ui.profile.ProfileScreen
 import com.example.financeapp.ui.statement.ImportStatementScreen
 import com.example.financeapp.ui.statement.StatementViewModel
 import com.example.financeapp.ui.transaction.AddTransactionScreen
 import com.example.financeapp.ui.transaction.ChooseAccountScreen
-import com.example.financeapp.ui.splash.SplashScreen
 
 object Routes {
     const val SPLASH = "splash"
@@ -190,7 +189,6 @@ fun AppNavigation(
                         onNavigateToImportStatement = { navController.navigate(Routes.IMPORT_STATEMENT) },
                         onNavigateToAddBankAccount = { navController.navigate(Routes.ADD_BANK_ACCOUNT) },
                         onNavigateToHistory = { navController.navigate(Routes.HISTORY) },
-                        onNavigateToAddTransaction = { navController.navigate(Routes.ADD_TRANSACTION) },
                         onEditCard = { card ->
                             dashboardViewModel.selectedCard = card
                             navController.navigate(Routes.ADD_CARD)
@@ -200,16 +198,20 @@ fun AppNavigation(
 
                 // ─── Detail screens ─────────────────────────────────
                 composable(Routes.INCOME) {
-                    IncomeScreen(repo = repo, onBack = { navController.popBackStack() })
+                    val incomeViewModel = remember { IncomeViewModel(repo) }
+                    IncomeScreen(viewModel = incomeViewModel, onBack = { navController.popBackStack() })
                 }
                 composable(Routes.EXPENSE) {
-                    ExpenseScreen(repo = repo, onBack = { navController.popBackStack() })
+                    val expenseViewModel = remember { ExpenseViewModel(repo) }
+                    ExpenseScreen(viewModel = expenseViewModel, onBack = { navController.popBackStack() })
                 }
                 composable(Routes.EMI) {
-                    EmiScreen(repo = repo, onBack = { navController.popBackStack() })
+                    val emiViewModel = remember { EmiViewModel(repo) }
+                    EmiScreen(viewModel = emiViewModel, onBack = { navController.popBackStack() })
                 }
                 composable(Routes.INVESTMENT) {
-                    InvestmentScreen(repo = repo, onBack = { navController.popBackStack() })
+                    val investmentViewModel = remember { InvestmentViewModel(repo) }
+                    InvestmentScreen(viewModel = investmentViewModel, onBack = { navController.popBackStack() })
                 }
                 composable(Routes.CALCULATOR) {
                     CalculatorScreen(onBack = { navController.popBackStack() })
@@ -430,7 +432,7 @@ private fun FloatingGlassDock(
                     .clip(CircleShape)
                     .background(
                         Brush.linearGradient(
-                            colors = listOf(Color(0xFF8B5CF6), Color(0xFF6D28D9))
+                            colors = listOf(Color(0xFF3B82F6), Color(0xFF1D4ED8))
                         )
                     )
                     .clickable { onAddTransaction() },

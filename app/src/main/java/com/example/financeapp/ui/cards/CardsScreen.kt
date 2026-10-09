@@ -1,24 +1,65 @@
 package com.example.financeapp.ui.cards
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
+import com.example.financeapp.ui.dashboard.DashboardColors
+import android.widget.Toast
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import com.example.financeapp.ui.theme.bounceClick
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCard
+import androidx.compose.material.icons.filled.Contactless
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +70,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
@@ -37,11 +79,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import android.widget.Toast
 import com.example.financeapp.data.BankAccount
 import com.example.financeapp.data.Card
-import com.example.financeapp.ui.theme.*
-import com.example.financeapp.ui.dashboard.DashboardColors
+import com.example.financeapp.ui.theme.Blue300
+import com.example.financeapp.ui.theme.Blue400
+import com.example.financeapp.ui.theme.Blue500
+import com.example.financeapp.ui.theme.Blue700
+import com.example.financeapp.ui.theme.Crimson
+import com.example.financeapp.ui.theme.Emerald
+import com.example.financeapp.ui.theme.EmeraldDim
+import com.example.financeapp.ui.theme.Ink200
+import com.example.financeapp.ui.theme.Sapphire
+import com.example.financeapp.ui.theme.bounceClick
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.financeapp.ui.theme.FinanceAppTheme
 
 @Composable
 fun CardsScreen(
@@ -65,10 +116,25 @@ fun CardsScreen(
         cards.filter { it.cardType == "Credit" }.sumOf { it.outstandingBalance }
     }
 
+    var isVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { isVisible = true }
+
+    val alpha1 by animateFloatAsState(if (isVisible) 1f else 0f, tween(800, 100, FastOutSlowInEasing), label = "alpha1")
+    val offsetY1 by animateFloatAsState(if (isVisible) 0f else 60f, tween(800, 100, FastOutSlowInEasing), label = "y1")
+
+    val alpha2 by animateFloatAsState(if (isVisible) 1f else 0f, tween(800, 200, FastOutSlowInEasing), label = "alpha2")
+    val offsetY2 by animateFloatAsState(if (isVisible) 0f else 60f, tween(800, 200, FastOutSlowInEasing), label = "y2")
+
+    val alpha3 by animateFloatAsState(if (isVisible) 1f else 0f, tween(800, 300, FastOutSlowInEasing), label = "alpha3")
+    val offsetY3 by animateFloatAsState(if (isVisible) 0f else 60f, tween(800, 300, FastOutSlowInEasing), label = "y3")
+
+    val alpha4 by animateFloatAsState(if (isVisible) 1f else 0f, tween(800, 400, FastOutSlowInEasing), label = "alpha4")
+    val offsetY4 by animateFloatAsState(if (isVisible) 0f else 60f, tween(800, 400, FastOutSlowInEasing), label = "y4")
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DashboardColors.bg)
+            .background(DashboardColors.bg())
     ) {
         
 Column(
@@ -80,7 +146,8 @@ Column(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 14.dp),
+                    .padding(horizontal = 20.dp, vertical = 14.dp)
+                    .graphicsLayer { alpha = alpha1; translationY = offsetY1 },
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -89,13 +156,13 @@ Column(
                         text = "Vault & Cards",
                         fontSize = 26.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = DashboardColors.textPrimary,
+                        color = DashboardColors.textPrimary(),
                         letterSpacing = (-0.5).sp
                     )
                     Text(
                         text = "Manage linked accounts & virtual cards",
                         fontSize = 12.sp,
-                        color = DashboardColors.textSecondary,
+                        color = DashboardColors.textSecondary(),
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -106,17 +173,17 @@ Column(
                         modifier = Modifier
                             .size(42.dp)
                             .clip(CircleShape)
-                            .background(DashboardColors.surface)
-                            .border(1.dp, Violet500.copy(alpha = 0.3f), CircleShape)
+                            .background(DashboardColors.surface())
+                            .border(1.dp, Blue500.copy(alpha = 0.3f), CircleShape)
                     ) {
-                        Icon(Icons.Filled.AddCard, contentDescription = "Add Card", tint = Violet400, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Filled.AddCard, contentDescription = "Add Card", tint = Blue400, modifier = Modifier.size(20.dp))
                     }
                     IconButton(
                         onClick = onAddBankAccount,
                         modifier = Modifier
                             .size(42.dp)
                             .clip(CircleShape)
-                            .background(DashboardColors.surface)
+                            .background(DashboardColors.surface())
                             .border(1.dp, Emerald.copy(alpha = 0.3f), CircleShape)
                     ) {
                         Icon(Icons.Filled.AccountBalance, contentDescription = "Add Bank", tint = Emerald, modifier = Modifier.size(20.dp))
@@ -125,12 +192,14 @@ Column(
             }
 
             // Overview Summary Pill
-            VaultOverviewPill(
-                totalBankBalance = totalBankBalance,
-                totalCreditLimit = totalCreditLimit,
-                totalOutstanding = totalOutstanding,
-                activeTab = selectedTab
-            )
+            Box(modifier = Modifier.graphicsLayer { alpha = alpha2; translationY = offsetY2 }) {
+                VaultOverviewPill(
+                    totalBankBalance = totalBankBalance,
+                    totalCreditLimit = totalCreditLimit,
+                    totalOutstanding = totalOutstanding,
+                    activeTab = selectedTab
+                )
+            }
 
             Spacer(modifier = Modifier.height(14.dp))
 
@@ -138,10 +207,11 @@ Column(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .graphicsLayer { alpha = alpha3; translationY = offsetY3 },
                 shape = RoundedCornerShape(22.dp),
-                color = DashboardColors.surface,
-                border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border)
+                color = DashboardColors.surface(),
+                border = BorderStroke(1.dp, DashboardColors.border())
             ) {
                 Row(
                     modifier = Modifier
@@ -155,7 +225,7 @@ Column(
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(18.dp))
-                                .background(if (isSelected) Violet700 else Color.Transparent)
+                                .background(if (isSelected) Blue700 else Color.Transparent)
                                 .clickable { selectedTab = index }
                                 .padding(vertical = 10.dp),
                             contentAlignment = Alignment.Center
@@ -164,7 +234,7 @@ Column(
                                 text = title,
                                 fontSize = 12.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) Color.White else DashboardColors.textSecondary,
+                                color = if (isSelected) Color.White else DashboardColors.textSecondary(),
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -175,7 +245,7 @@ Column(
             Spacer(modifier = Modifier.height(12.dp))
 
             // Content List
-            Box(modifier = Modifier.weight(1f)) {
+            Box(modifier = Modifier.weight(1f).graphicsLayer { alpha = alpha4; translationY = offsetY4 }) {
                 AnimatedContent(
                     targetState = selectedTab,
                     transitionSpec = {
@@ -207,8 +277,8 @@ private fun VaultOverviewPill(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(20.dp),
-        color = DashboardColors.surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border)
+        color = DashboardColors.surface(),
+        border = BorderStroke(1.dp, DashboardColors.border())
     ) {
         Row(
             modifier = Modifier
@@ -219,14 +289,14 @@ private fun VaultOverviewPill(
         ) {
             if (activeTab == 0) {
                 Column {
-                    Text("TOTAL LIQUID DEPOSITS", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary, letterSpacing = 1.sp)
+                    Text("TOTAL LIQUID DEPOSITS", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary(), letterSpacing = 1.sp)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text("₹${String.format("%,.2f", totalBankBalance)}", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, color = Emerald)
                 }
                 Surface(
                     shape = RoundedCornerShape(12.dp),
                     color = EmeraldDim.copy(alpha = 0.5f),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Emerald.copy(alpha = 0.3f))
+                    border = BorderStroke(1.dp, Emerald.copy(alpha = 0.3f))
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
@@ -239,13 +309,13 @@ private fun VaultOverviewPill(
                 }
             } else {
                 Column {
-                    Text("AVAILABLE CREDIT", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary, letterSpacing = 1.sp)
+                    Text("AVAILABLE CREDIT", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary(), letterSpacing = 1.sp)
                     Spacer(modifier = Modifier.height(4.dp))
                     val available = (totalCreditLimit - totalOutstanding).coerceAtLeast(0.0)
-                    Text("₹${String.format("%,.0f", available)}", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, color = Violet300)
+                    Text("₹${String.format("%,.0f", available)}", fontSize = 24.sp, fontWeight = FontWeight.ExtraBold, color = Blue300)
                 }
                 Column(horizontalAlignment = Alignment.End) {
-                    Text("TOTAL DUE", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary, letterSpacing = 1.sp)
+                    Text("TOTAL DUE", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary(), letterSpacing = 1.sp)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         "₹${String.format("%,.0f", totalOutstanding)}",
@@ -302,7 +372,7 @@ private fun CardsTab(
             subtitle = "Store your $cardCategory card details securely with biometric-ready local encryption.",
             buttonText = "Add $cardCategory Card",
             icon = Icons.Filled.CreditCard,
-            accentColor = if (cardCategory == "Credit") Violet400 else Sapphire,
+            accentColor = if (cardCategory == "Credit") Blue400 else Sapphire,
             onClick = onAddCard
         )
     } else {
@@ -324,8 +394,8 @@ private fun LuxuryBankAccountCard(account: BankAccount, onEditAccount: (BankAcco
     val clipboard = LocalClipboardManager.current
     val context = LocalContext.current
 
-    val defaultSurface = DashboardColors.surface
-    val defaultBorder = DashboardColors.border
+    val defaultSurface = DashboardColors.surface()
+    val defaultBorder = DashboardColors.border()
     val bankTheme = remember(account.bankName, defaultSurface, defaultBorder) {
         val name = account.bankName.lowercase()
         when {
@@ -342,11 +412,11 @@ private fun LuxuryBankAccountCard(account: BankAccount, onEditAccount: (BankAcco
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(12.dp, RoundedCornerShape(22.dp), spotColor = Violet500.copy(alpha = 0.15f))
+            .shadow(12.dp, RoundedCornerShape(22.dp), spotColor = Blue500.copy(alpha = 0.15f))
             .bounceClick { onEditAccount(account) },
         shape = RoundedCornerShape(22.dp),
         color = Color.Transparent,
-        border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border.copy(alpha = 0.6f))
+        border = BorderStroke(1.dp, DashboardColors.border().copy(alpha = 0.6f))
     ) {
         Box(
             modifier = Modifier
@@ -394,7 +464,7 @@ private fun LuxuryBankAccountCard(account: BankAccount, onEditAccount: (BankAcco
                     Surface(
                         shape = RoundedCornerShape(10.dp),
                         color = Color.White.copy(alpha = 0.18f),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.25f))
+                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.25f))
                     ) {
                         Text(
                             text = account.accountType.uppercase(),
@@ -494,7 +564,7 @@ private fun LuxuryPaymentCardItem(card: Card, onEditCard: (Card) -> Unit = {}) {
                 "mastercard" -> listOf(Color(0xFF23074D), Color(0xFFCC5333))
                 "rupay" -> listOf(Color(0xFF0B301A), Color(0xFF1E5E3A), Color(0xFF2E8B57))
                 "american express", "amex" -> listOf(Color(0xFF141E30), Color(0xFF243B55))
-                else -> listOf(Color(0xFF1A0B2E), Color(0xFF4C1D95), Color(0xFF6D28D9))
+                else -> listOf(Color(0xFF1A0B2E), Color(0xFF4C1D95), Color(0xFF1D4ED8))
             }
         } else {
             when (card.cardNetwork.lowercase()) {
@@ -509,11 +579,11 @@ private fun LuxuryPaymentCardItem(card: Card, onEditCard: (Card) -> Unit = {}) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(16.dp, RoundedCornerShape(22.dp), spotColor = Violet500.copy(alpha = 0.2f))
+            .shadow(16.dp, RoundedCornerShape(22.dp), spotColor = Blue500.copy(alpha = 0.2f))
             .bounceClick { onEditCard(card) },
         shape = RoundedCornerShape(22.dp),
         color = Color.Transparent,
-        border = androidx.compose.foundation.BorderStroke(
+        border = BorderStroke(
             width = 1.dp,
             color = if (isCardFrozen) Crimson.copy(alpha = 0.5f) else Color.White.copy(alpha = 0.18f)
         )
@@ -552,7 +622,7 @@ private fun LuxuryPaymentCardItem(card: Card, onEditCard: (Card) -> Unit = {}) {
                     Surface(
                         shape = RoundedCornerShape(8.dp),
                         color = Color.White.copy(alpha = 0.18f),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.3f))
+                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f))
                     ) {
                         Text(
                             text = card.cardNetwork.ifBlank { "CARD" }.uppercase(),
@@ -769,7 +839,7 @@ private fun CardActionChip(
             .clip(RoundedCornerShape(10.dp))
             .bounceClick(onClick = onClick),
         color = Color.White.copy(alpha = 0.12f),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.18f))
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.18f))
     ) {
         Row(
             modifier = Modifier.padding(vertical = 6.dp, horizontal = 8.dp),
@@ -845,14 +915,14 @@ private fun EmptyVaultState(
                 text = title,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = DashboardColors.textPrimary,
+                color = DashboardColors.textPrimary(),
                 textAlign = TextAlign.Center
             )
 
             Text(
                 text = subtitle,
                 fontSize = 13.sp,
-                color = DashboardColors.textSecondary,
+                color = DashboardColors.textSecondary(),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -872,3 +942,27 @@ private fun EmptyVaultState(
         }
     }
 }
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "CardsScreen Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "CardsScreen Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CardsScreenPreview() {
+    FinanceAppTheme {
+        CardsScreen(
+            bankAccounts = listOf(
+                BankAccount(id = 1, bankName = "HDFC Bank", accountNumber = "•••• 4892", accountType = "Savings", currentBalance = 148500.0, ifscCode = "HDFC0001234"),
+                BankAccount(id = 2, bankName = "ICICI Bank", accountNumber = "•••• 9102", accountType = "Salary", currentBalance = 75200.0, ifscCode = "ICIC0005678")
+            ),
+            cards = listOf(
+                Card(id = 1, cardHolderName = "Kiran F", cardNumber = "•••• 4410", cardType = "Credit", cardNetwork = "Visa", bankName = "HDFC Bank", expiryMonth = 8, expiryYear = 2028, creditLimit = 300000.0, outstandingBalance = 42500.0),
+                Card(id = 2, cardHolderName = "Kiran F", cardNumber = "•••• 1823", cardType = "Credit", cardNetwork = "Mastercard", bankName = "ICICI Bank", expiryMonth = 11, expiryYear = 2027, creditLimit = 150000.0, outstandingBalance = 12000.0)
+            ),
+            onAddBankAccount = {},
+            onAddCard = {}
+        )
+    }
+}
+
+

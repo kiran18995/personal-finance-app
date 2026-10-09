@@ -51,14 +51,18 @@ object BankStatementRegexPattern {
     }
 }
 
-class PdfParserService(private val context: Context) {
+interface StatementParser {
+    suspend fun parsePdf(uri: Uri, password: String? = null): PdfParserService.ParsedStatementResult
+}
+
+class PdfParserService(private val context: Context) : StatementParser {
 
     data class ParsedStatementResult(
         val transactions: List<ParsedTransaction>,
         val finalBalance: Double?
     )
 
-    suspend fun parsePdf(uri: Uri, password: String? = null): ParsedStatementResult = withContext(Dispatchers.IO) {
+    override suspend fun parsePdf(uri: Uri, password: String?): ParsedStatementResult = withContext(Dispatchers.IO) {
         val transactions = mutableListOf<ParsedTransaction>()
         var finalBalance: Double? = null
         var document: PDDocument? = null

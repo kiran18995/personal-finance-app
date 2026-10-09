@@ -1,33 +1,98 @@
 package com.example.financeapp.ui.calculator
 
+import com.example.financeapp.ui.dashboard.DashboardColors
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.Spring
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.core.spring
+import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.PrimaryScrollableTabRow
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.financeapp.calculator.*
-import com.example.financeapp.data.BankRatesRepository
-import com.example.financeapp.ui.theme.*
-import com.example.financeapp.ui.dashboard.DashboardColors
-import com.example.financeapp.util.toINR
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.background
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
+import com.example.financeapp.calculator.CiResult
+import com.example.financeapp.calculator.CompoundInterestCalculator
+import com.example.financeapp.calculator.EmiCalculator
+import com.example.financeapp.calculator.EmiResult
+import com.example.financeapp.calculator.FdCalculator
+import com.example.financeapp.calculator.FdResult
+import com.example.financeapp.calculator.GstCalculator
+import com.example.financeapp.calculator.GstResult
+import com.example.financeapp.calculator.InflationCalculator
+import com.example.financeapp.calculator.InflationResult
+import com.example.financeapp.calculator.LoanComparisonCalculator
+import com.example.financeapp.calculator.LoanComparisonResult
+import com.example.financeapp.calculator.LoanPayoffCalculator
+import com.example.financeapp.calculator.LoanPayoffResult
+import com.example.financeapp.calculator.LumpsumCalculator
+import com.example.financeapp.calculator.LumpsumResult
+import com.example.financeapp.calculator.PpfCalculator
+import com.example.financeapp.calculator.PpfResult
+import com.example.financeapp.calculator.RateStressTestCalculator
+import com.example.financeapp.calculator.RdCalculator
+import com.example.financeapp.calculator.RdResult
+import com.example.financeapp.calculator.RetirementCalculator
+import com.example.financeapp.calculator.RetirementResult
+import com.example.financeapp.calculator.SipCalculator
+import com.example.financeapp.calculator.SipResult
+import com.example.financeapp.calculator.StressTestScenario
+import com.example.financeapp.calculator.TaxCalculator
+import com.example.financeapp.calculator.TaxResult
+import com.example.financeapp.data.BankRatesRepository
+import com.example.financeapp.ui.theme.AccentBlue
+import com.example.financeapp.ui.theme.Blue400
+import com.example.financeapp.ui.theme.Blue500
+import com.example.financeapp.ui.theme.Blue600
+import com.example.financeapp.ui.theme.ExpenseRed
+import com.example.financeapp.ui.theme.IncomeGreen
+import com.example.financeapp.ui.theme.FinanceAppTheme
+import com.example.financeapp.util.toINR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,19 +101,19 @@ fun CalculatorScreen(onBack: () -> Unit, initialTab: Int = 0) {
     val tabs = listOf("EMI", "SIP", "FD", "RD", "PPF", "Lumpsum", "CI", "Tax", "GST", "Retire", "Payoff", "Inflation", "Loan Compare")
 
     Scaffold(
-        containerColor = DashboardColors.bg,
+        containerColor = DashboardColors.bg(),
         topBar = {
             TopAppBar(
-                title = { Text("Financial Calculators", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary) },
+                title = { Text("Financial Calculators", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary()) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = DashboardColors.textPrimary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = DashboardColors.textPrimary())
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DashboardColors.bg,
-                    titleContentColor = DashboardColors.textPrimary,
-                    navigationIconContentColor = DashboardColors.textPrimary
+                    containerColor = DashboardColors.bg(),
+                    titleContentColor = DashboardColors.textPrimary(),
+                    navigationIconContentColor = DashboardColors.textPrimary()
                 )
             )
         }
@@ -56,13 +121,13 @@ fun CalculatorScreen(onBack: () -> Unit, initialTab: Int = 0) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(DashboardColors.bg)
+                .background(DashboardColors.bg())
                 .padding(padding)
         ) {
             PrimaryScrollableTabRow(
                 selectedTabIndex = selectedTab,
-                containerColor = DashboardColors.surface,
-                contentColor = Violet400,
+                containerColor = DashboardColors.surface(),
+                contentColor = Blue400,
                 edgePadding = 16.dp,
                 divider = {}
             ) {
@@ -74,7 +139,7 @@ fun CalculatorScreen(onBack: () -> Unit, initialTab: Int = 0) {
                             Text(
                                 title,
                                 fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Medium,
-                                color = if (selectedTab == index) Violet400 else DashboardColors.textSecondary
+                                color = if (selectedTab == index) Blue400 else DashboardColors.textSecondary()
                             )
                         }
                     )
@@ -110,15 +175,15 @@ fun CalcInput(value: String, onValueChange: (String) -> Unit, label: String, isD
             keyboardType = if (isDecimal) KeyboardType.Decimal else KeyboardType.Number
         ),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Violet500,
-            unfocusedBorderColor = DashboardColors.border,
-            focusedTextColor = DashboardColors.textPrimary,
-            unfocusedTextColor = DashboardColors.textPrimary,
-            focusedLabelColor = Violet400,
-            unfocusedLabelColor = DashboardColors.textSecondary,
-            cursorColor = Violet400,
-            focusedContainerColor = DashboardColors.surface,
-            unfocusedContainerColor = DashboardColors.surface
+            focusedBorderColor = Blue500,
+            unfocusedBorderColor = DashboardColors.border(),
+            focusedTextColor = DashboardColors.textPrimary(),
+            unfocusedTextColor = DashboardColors.textPrimary(),
+            focusedLabelColor = Blue400,
+            unfocusedLabelColor = DashboardColors.textSecondary(),
+            cursorColor = Blue400,
+            focusedContainerColor = DashboardColors.surface(),
+            unfocusedContainerColor = DashboardColors.surface()
         ),
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
@@ -131,7 +196,7 @@ fun CalcButton(text: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth().height(52.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Violet600),
+        colors = ButtonDefaults.buttonColors(containerColor = Blue600),
         shape = RoundedCornerShape(14.dp)
     ) { Text(text, fontWeight = FontWeight.Bold, color = Color.White) }
 }
@@ -142,9 +207,9 @@ fun ResultCard(content: @Composable ColumnScope.() -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .animateContentSize(spring(stiffness = Spring.StiffnessLow)),
-        color = DashboardColors.surface,
+        color = DashboardColors.surface(),
         shape = RoundedCornerShape(20.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Violet500.copy(alpha = 0.35f))
+        border = BorderStroke(1.dp, Blue500.copy(alpha = 0.35f))
     ) {
         Column(modifier = Modifier.padding(18.dp), content = content)
     }
@@ -157,8 +222,8 @@ fun ResultRow(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(label, fontSize = 13.sp, color = DashboardColors.textSecondary)
-        Text(value, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary)
+        Text(label, fontSize = 13.sp, color = DashboardColors.textSecondary())
+        Text(value, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary())
     }
 }
 
@@ -567,4 +632,66 @@ fun LoanCompareTab() {
         }
         Spacer(modifier = Modifier.height(24.dp))
     }
+}
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "Calculator Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+private fun CalculatorScreenLightPreview() {
+    FinanceAppTheme { CalculatorScreen(onBack = {}) }
+}
+
+@Preview(name = "Calculator Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CalculatorScreenDarkPreview() {
+    FinanceAppTheme { CalculatorScreen(onBack = {}) }
+}
+
+@Preview(name = "CalcInput Light", uiMode = Configuration.UI_MODE_NIGHT_NO, showBackground = true)
+@Composable
+private fun CalcInputLightPreview() {
+    FinanceAppTheme { CalcInput(value = "50000", onValueChange = {}, label = "Principal (₹)") }
+}
+
+@Preview(name = "CalcInput Dark", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+private fun CalcInputDarkPreview() {
+    FinanceAppTheme { CalcInput(value = "50000", onValueChange = {}, label = "Principal (₹)") }
+}
+
+@Preview(name = "ResultRow Light", uiMode = Configuration.UI_MODE_NIGHT_NO, showBackground = true)
+@Composable
+private fun ResultRowLightPreview() {
+    FinanceAppTheme { ResultRow(label = "Monthly EMI", value = "₹12,500") }
+}
+
+@Preview(name = "ResultRow Dark", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+private fun ResultRowDarkPreview() {
+    FinanceAppTheme { ResultRow(label = "Monthly EMI", value = "₹12,500") }
+}
+
+@Preview(name = "EmiTab Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+private fun EmiCalculatorTabLightPreview() {
+    FinanceAppTheme { EmiCalculatorTab() }
+}
+
+@Preview(name = "EmiTab Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun EmiCalculatorTabDarkPreview() {
+    FinanceAppTheme { EmiCalculatorTab() }
+}
+
+@Preview(name = "SipTab Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+private fun SipCalculatorTabLightPreview() {
+    FinanceAppTheme { SipCalculatorTab() }
+}
+
+@Preview(name = "SipTab Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun SipCalculatorTabDarkPreview() {
+    FinanceAppTheme { SipCalculatorTab() }
 }

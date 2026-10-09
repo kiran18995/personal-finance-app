@@ -1,8 +1,7 @@
 package com.example.financeapp.ui.expense
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
+import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -35,33 +33,71 @@ import com.example.financeapp.data.Expense
 import com.example.financeapp.data.FinanceRepository
 import com.example.financeapp.ui.theme.*
 import com.example.financeapp.ui.dashboard.DashboardColors
+import com.example.financeapp.ui.common.AmountText
 import com.example.financeapp.util.ExpenseCategories
 import com.example.financeapp.util.toINR
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import kotlinx.coroutines.launch
+
+import com.example.financeapp.data.ExpenseRepository
+
+@Composable
+fun ExpenseScreen(
+    viewModel: ExpenseViewModel,
+    onBack: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    ExpenseScreenContent(
+        uiState = uiState,
+        onAddExpense = { amount, category, desc ->
+            viewModel.addExpense(
+                category = category,
+                amount = amount,
+                date = System.currentTimeMillis(),
+                description = desc
+            )
+        },
+        onDeleteExpense = { viewModel.deleteExpense(it) },
+        onBack = onBack
+    )
+}
+
+@Composable
+fun ExpenseScreen(
+    repo: ExpenseRepository,
+    onBack: () -> Unit
+) {
+    val viewModel = remember(repo) { ExpenseViewModel(repo) }
+    ExpenseScreen(viewModel = viewModel, onBack = onBack)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpenseScreen(repo: FinanceRepository, onBack: () -> Unit) {
-    val expenses by repo.getAllExpenses().collectAsStateWithLifecycle(emptyList())
+fun ExpenseScreenContent(
+    uiState: ExpenseUiState,
+    onAddExpense: (amount: Double, category: String, description: String) -> Unit,
+    onDeleteExpense: (Expense) -> Unit,
+    onBack: () -> Unit
+) {
     var showDialog by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-
-    val totalExpense = remember(expenses) { expenses.sumOf { it.amount } }
+    val expenses = uiState.expenses
+    val totalExpense = uiState.totalExpense
 
     Scaffold(
-        containerColor = DashboardColors.bg,
+        containerColor = DashboardColors.bg(),
         topBar = {
             TopAppBar(
-                title = { Text("Expenses Tracker", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary) },
+                title = { Text("Expenses Tracker", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary()) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = DashboardColors.textPrimary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = DashboardColors.textPrimary())
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DashboardColors.bg,
-                    titleContentColor = DashboardColors.textPrimary,
-                    navigationIconContentColor = DashboardColors.textPrimary
+                    containerColor = DashboardColors.bg(),
+                    titleContentColor = DashboardColors.textPrimary(),
+                    navigationIconContentColor = DashboardColors.textPrimary()
                 )
             )
         },
@@ -80,7 +116,7 @@ fun ExpenseScreen(repo: FinanceRepository, onBack: () -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(DashboardColors.bg)
+                .background(DashboardColors.bg())
                 .padding(padding)
         ) {
             // Ambient glow
@@ -93,13 +129,13 @@ Column(modifier = Modifier.fillMaxSize()) {
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                         .shadow(10.dp, RoundedCornerShape(22.dp), spotColor = Crimson.copy(alpha = 0.2f)),
                     shape = RoundedCornerShape(22.dp),
-                    color = DashboardColors.surface,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border)
+                    color = DashboardColors.surface(),
+                    border = BorderStroke(1.dp, DashboardColors.border())
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Brush.linearGradient(listOf(CrimsonDim.copy(alpha = 0.45f), DashboardColors.surface)))
+                            .background(Brush.linearGradient(listOf(CrimsonDim.copy(alpha = 0.45f), DashboardColors.surface())))
                             .padding(20.dp)
                     ) {
                         Row(
@@ -117,7 +153,7 @@ Column(modifier = Modifier.fillMaxSize()) {
                                     color = Crimson
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
-                                Text("${expenses.size} total expense item(s)", fontSize = 11.sp, color = DashboardColors.textSecondary)
+                                Text("${expenses.size} total expense item(s)", fontSize = 11.sp, color = DashboardColors.textSecondary())
                             }
 
                             Box(
@@ -150,8 +186,8 @@ Column(modifier = Modifier.fillMaxSize()) {
                             ) {
                                 Icon(Icons.AutoMirrored.Filled.TrendingDown, null, Modifier.size(36.dp), tint = Crimson)
                             }
-                            Text("No expenses recorded yet", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary)
-                            Text("Tap the + button to log your daily spending", fontSize = 13.sp, color = DashboardColors.textSecondary)
+                            Text("No expenses recorded yet", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary())
+                            Text("Tap the + button to log your daily spending", fontSize = 13.sp, color = DashboardColors.textSecondary())
                         }
                     }
                 } else {
@@ -164,8 +200,8 @@ Column(modifier = Modifier.fillMaxSize()) {
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(16.dp),
-                                color = DashboardColors.surface,
-                                border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.surface)
+                                color = DashboardColors.surface(),
+                                border = BorderStroke(1.dp, DashboardColors.surface())
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -175,6 +211,7 @@ Column(modifier = Modifier.fillMaxSize()) {
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Row(
+                                        modifier = Modifier.weight(1f),
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
@@ -188,23 +225,36 @@ Column(modifier = Modifier.fillMaxSize()) {
                                         ) {
                                             Text(getCategoryEmoji(expense.category), fontSize = 18.sp)
                                         }
-                                        Column {
-                                            Text(expense.category, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary)
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = expense.category,
+                                                fontSize = 15.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = DashboardColors.textPrimary(),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
                                             if (expense.description.isNotEmpty()) {
-                                                Text(expense.description, fontSize = 12.sp, color = DashboardColors.textSecondary)
+                                                Text(
+                                                    text = expense.description,
+                                                    fontSize = 12.sp,
+                                                    color = DashboardColors.textSecondary(),
+                                                    maxLines = 2,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
                                             }
                                         }
                                     }
 
-                                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                        Text(
-                                            text = "-${expense.amount.toINR()}",
-                                            color = Crimson,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.ExtraBold
-                                        )
+                                    Spacer(modifier = Modifier.width(8.dp))
+
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        AmountText(amount = expense.amount, isIncome = false)
                                         IconButton(
-                                            onClick = { scope.launch { repo.deleteExpense(expense) } },
+                                            onClick = { onDeleteExpense(expense) },
                                             modifier = Modifier.size(32.dp)
                                         ) {
                                             Icon(Icons.Default.DeleteOutline, "Delete", tint = Crimson.copy(alpha = 0.8f), modifier = Modifier.size(18.dp))
@@ -223,10 +273,8 @@ Column(modifier = Modifier.fillMaxSize()) {
         AddExpenseDialog(
             onDismiss = { showDialog = false },
             onAdd = { amount, category, desc ->
-                scope.launch {
-                    repo.addExpense(Expense(amount = amount, category = category, description = desc))
-                    showDialog = false
-                }
+                onAddExpense(amount, category, desc)
+                showDialog = false
             }
         )
     }
@@ -240,30 +288,30 @@ fun AddExpenseDialog(onDismiss: () -> Unit, onAdd: (Double, String, String) -> U
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = DashboardColors.surface,
+        containerColor = DashboardColors.surface(),
         shape = RoundedCornerShape(22.dp),
-        title = { Text("Add Expense", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary) },
+        title = { Text("Add Expense", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary()) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 OutlinedTextField(
                     value = amount,
                     onValueChange = { amount = it },
-                    label = { Text("Amount (₹)", color = DashboardColors.textSecondary) },
+                    label = { Text("Amount (₹)", color = DashboardColors.textSecondary()) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Crimson,
-                        unfocusedBorderColor = DashboardColors.border,
-                        focusedTextColor = DashboardColors.textPrimary,
-                        unfocusedTextColor = DashboardColors.textPrimary,
+                        unfocusedBorderColor = DashboardColors.border(),
+                        focusedTextColor = DashboardColors.textPrimary(),
+                        unfocusedTextColor = DashboardColors.textPrimary(),
                         cursorColor = Crimson,
-                        focusedContainerColor = DashboardColors.surface,
-                        unfocusedContainerColor = DashboardColors.surface
+                        focusedContainerColor = DashboardColors.surface(),
+                        unfocusedContainerColor = DashboardColors.surface()
                     ),
                     shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Text("Expense Category", fontSize = 12.sp, color = DashboardColors.textSecondary, fontWeight = FontWeight.SemiBold)
+                Text("Expense Category", fontSize = 12.sp, color = DashboardColors.textSecondary(), fontWeight = FontWeight.SemiBold)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -277,14 +325,14 @@ fun AddExpenseDialog(onDismiss: () -> Unit, onAdd: (Double, String, String) -> U
                                 .weight(1f)
                                 .clip(RoundedCornerShape(10.dp))
                                 .clickable { selectedCategory = cat },
-                            color = if (isSel) Crimson else DashboardColors.surface,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, if (isSel) Crimson else DashboardColors.border)
+                            color = if (isSel) Crimson else DashboardColors.surface(),
+                            border = BorderStroke(1.dp, if (isSel) Crimson else DashboardColors.border())
                         ) {
                             Text(
                                 text = cat,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isSel) Color.White else DashboardColors.textSecondary,
+                                color = if (isSel) Color.White else DashboardColors.textSecondary(),
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
@@ -295,15 +343,15 @@ fun AddExpenseDialog(onDismiss: () -> Unit, onAdd: (Double, String, String) -> U
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Notes / Merchant", color = DashboardColors.textSecondary) },
+                    label = { Text("Notes / Merchant", color = DashboardColors.textSecondary()) },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Crimson,
-                        unfocusedBorderColor = DashboardColors.border,
-                        focusedTextColor = DashboardColors.textPrimary,
-                        unfocusedTextColor = DashboardColors.textPrimary,
+                        unfocusedBorderColor = DashboardColors.border(),
+                        focusedTextColor = DashboardColors.textPrimary(),
+                        unfocusedTextColor = DashboardColors.textPrimary(),
                         cursorColor = Crimson,
-                        focusedContainerColor = DashboardColors.surface,
-                        unfocusedContainerColor = DashboardColors.surface
+                        focusedContainerColor = DashboardColors.surface(),
+                        unfocusedContainerColor = DashboardColors.surface()
                     ),
                     shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -321,7 +369,7 @@ fun AddExpenseDialog(onDismiss: () -> Unit, onAdd: (Double, String, String) -> U
             ) { Text("Save Expense", fontWeight = FontWeight.Bold) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel", color = DashboardColors.textSecondary) }
+            TextButton(onClick = onDismiss) { Text("Cancel", color = DashboardColors.textSecondary()) }
         }
     )
 }
@@ -339,4 +387,56 @@ private fun getCategoryEmoji(category: String): String {
         c.contains("education") -> "📚"
         else -> "💸"
     }
+}
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "ExpenseScreen Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+private fun ExpenseScreenLightPreview() {
+    FinanceAppTheme {
+        ExpenseScreenContent(
+            uiState = ExpenseUiState(
+                expenses = listOf(
+                    Expense(id = 1, amount = 1450.0, category = "Food & Dining", description = "Dinner with team"),
+                    Expense(id = 2, amount = 3200.0, category = "Groceries", description = "Weekly supermarket")
+                ),
+                totalExpense = 4650.0
+            ),
+            onAddExpense = { _, _, _ -> },
+            onDeleteExpense = {},
+            onBack = {}
+        )
+    }
+}
+
+@Preview(name = "ExpenseScreen Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun ExpenseScreenDarkPreview() {
+    FinanceAppTheme {
+        ExpenseScreenContent(
+            uiState = ExpenseUiState(
+                expenses = listOf(
+                    Expense(id = 1, amount = 1450.0, category = "Food & Dining", description = "Dinner with team"),
+                    Expense(id = 2, amount = 3200.0, category = "Groceries", description = "Weekly supermarket")
+                ),
+                totalExpense = 4650.0
+            ),
+            onAddExpense = { _, _, _ -> },
+            onDeleteExpense = {},
+            onBack = {}
+        )
+    }
+}
+
+@Preview(name = "AddExpenseDialog Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+private fun AddExpenseDialogLightPreview() {
+    FinanceAppTheme { AddExpenseDialog(onDismiss = {}, onAdd = { _, _, _ -> }) }
+}
+
+@Preview(name = "AddExpenseDialog Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun AddExpenseDialogDarkPreview() {
+    FinanceAppTheme { AddExpenseDialog(onDismiss = {}, onAdd = { _, _, _ -> }) }
 }

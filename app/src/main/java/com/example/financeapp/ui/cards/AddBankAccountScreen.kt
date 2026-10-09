@@ -16,6 +16,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.financeapp.data.BankAccount
+import android.content.res.Configuration
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.financeapp.ui.theme.FinanceAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -194,3 +197,18 @@ fun AddBankAccountScreen(
         }
     }
 }
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "AddBankAccountScreen Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "AddBankAccountScreen Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun AddBankAccountScreenPreview() {
+    FinanceAppTheme {
+        AddBankAccountScreen(
+            onDismiss = {},
+            onSave = {}
+        )
+    }
+}
+

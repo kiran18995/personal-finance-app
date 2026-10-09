@@ -1,11 +1,9 @@
 package com.example.financeapp.ui.emi
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
+import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,9 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -35,32 +31,70 @@ import com.example.financeapp.data.FinanceRepository
 import com.example.financeapp.ui.theme.*
 import com.example.financeapp.ui.dashboard.DashboardColors
 import com.example.financeapp.util.toINR
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.financeapp.ui.theme.FinanceAppTheme
 import kotlinx.coroutines.launch
+
+import com.example.financeapp.data.EmiRepository
+
+@Composable
+fun EmiScreen(
+    viewModel: EmiViewModel,
+    onBack: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    EmiScreenContent(
+        uiState = uiState,
+        onAddEmi = { name, principal, rate, tenure, emiAmount ->
+            viewModel.addEmi(
+                name = name,
+                principal = principal,
+                interestRate = rate,
+                termMonths = tenure,
+                emiAmount = emiAmount
+            )
+        },
+        onDeleteEmi = { viewModel.deleteEmi(it) },
+        onBack = onBack
+    )
+}
+
+@Composable
+fun EmiScreen(
+    repo: EmiRepository,
+    onBack: () -> Unit
+) {
+    val viewModel = remember(repo) { EmiViewModel(repo) }
+    EmiScreen(viewModel = viewModel, onBack = onBack)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmiScreen(repo: FinanceRepository, onBack: () -> Unit) {
-    val emis by repo.getAllEmis().collectAsStateWithLifecycle(emptyList())
+fun EmiScreenContent(
+    uiState: EmiUiState,
+    onAddEmi: (name: String, principal: Double, rate: Double, tenure: Int, emiAmount: Double) -> Unit,
+    onDeleteEmi: (Emi) -> Unit,
+    onBack: () -> Unit
+) {
     var showDialog by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-
-    val totalMonthlyEmi = remember(emis) { emis.sumOf { it.emiAmount } }
-    val totalPrincipal = remember(emis) { emis.sumOf { it.principal } }
+    val emis = uiState.emis
+    val totalMonthlyEmi = uiState.totalMonthlyEmi
+    val totalPrincipal = uiState.totalPrincipal
 
     Scaffold(
-        containerColor = DashboardColors.bg,
+        containerColor = DashboardColors.bg(),
         topBar = {
             TopAppBar(
-                title = { Text("Loans & EMI Portfolio", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary) },
+                title = { Text("Loans & EMI Portfolio", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary()) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = DashboardColors.textPrimary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = DashboardColors.textPrimary())
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DashboardColors.bg,
-                    titleContentColor = DashboardColors.textPrimary,
-                    navigationIconContentColor = DashboardColors.textPrimary
+                    containerColor = DashboardColors.bg(),
+                    titleContentColor = DashboardColors.textPrimary(),
+                    navigationIconContentColor = DashboardColors.textPrimary()
                 )
             )
         },
@@ -68,7 +102,7 @@ fun EmiScreen(repo: FinanceRepository, onBack: () -> Unit) {
             FloatingActionButton(
                 onClick = { showDialog = true },
                 containerColor = Amber,
-                contentColor = DashboardColors.bg,
+                contentColor = DashboardColors.bg(),
                 shape = CircleShape,
                 modifier = Modifier.shadow(16.dp, CircleShape, spotColor = Amber)
             ) {
@@ -79,7 +113,7 @@ fun EmiScreen(repo: FinanceRepository, onBack: () -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(DashboardColors.bg)
+                .background(DashboardColors.bg())
                 .padding(padding)
         ) {
             // Ambient amber glow
@@ -92,13 +126,13 @@ Column(modifier = Modifier.fillMaxSize()) {
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                         .shadow(10.dp, RoundedCornerShape(22.dp), spotColor = Amber.copy(alpha = 0.2f)),
                     shape = RoundedCornerShape(22.dp),
-                    color = DashboardColors.surface,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border)
+                    color = DashboardColors.surface(),
+                    border = BorderStroke(1.dp, DashboardColors.border())
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Brush.linearGradient(listOf(Amber.copy(alpha = 0.2f), DashboardColors.surface)))
+                            .background(Brush.linearGradient(listOf(Amber.copy(alpha = 0.2f), DashboardColors.surface())))
                             .padding(20.dp)
                     ) {
                         Row(
@@ -116,7 +150,7 @@ Column(modifier = Modifier.fillMaxSize()) {
                                     color = Amber
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
-                                Text("Total Loan Balance: ${totalPrincipal.toINR()}", fontSize = 11.sp, color = DashboardColors.textSecondary)
+                                Text("Total Loan Balance: ${totalPrincipal.toINR()}", fontSize = 11.sp, color = DashboardColors.textSecondary())
                             }
 
                             Box(
@@ -149,8 +183,8 @@ Column(modifier = Modifier.fillMaxSize()) {
                             ) {
                                 Icon(Icons.Default.AccountBalance, null, Modifier.size(36.dp), tint = Amber)
                             }
-                            Text("No active loans or EMIs", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary)
-                            Text("Tap the + button to add a home, car or personal loan", fontSize = 13.sp, color = DashboardColors.textSecondary)
+                            Text("No active loans or EMIs", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary())
+                            Text("Tap the + button to add a home, car or personal loan", fontSize = 13.sp, color = DashboardColors.textSecondary())
                         }
                     }
                 } else {
@@ -163,8 +197,8 @@ Column(modifier = Modifier.fillMaxSize()) {
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(18.dp),
-                                color = DashboardColors.surface,
-                                border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.surface)
+                                color = DashboardColors.surface(),
+                                border = BorderStroke(1.dp, DashboardColors.surface())
                             ) {
                                 Column(modifier = Modifier.padding(18.dp)) {
                                     Row(
@@ -185,11 +219,11 @@ Column(modifier = Modifier.fillMaxSize()) {
                                             ) {
                                                 Icon(Icons.Default.RealEstateAgent, contentDescription = null, tint = Amber, modifier = Modifier.size(20.dp))
                                             }
-                                            Text(emi.name, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary)
+                                            Text(emi.name, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary())
                                         }
 
                                         IconButton(
-                                            onClick = { scope.launch { repo.deleteEmi(emi) } },
+                                            onClick = { onDeleteEmi(emi) },
                                             modifier = Modifier.size(32.dp)
                                         ) {
                                             Icon(Icons.Default.DeleteOutline, "Delete", tint = Crimson.copy(alpha = 0.8f), modifier = Modifier.size(18.dp))
@@ -197,7 +231,7 @@ Column(modifier = Modifier.fillMaxSize()) {
                                     }
 
                                     Spacer(Modifier.height(12.dp))
-                                    HorizontalDivider(color = DashboardColors.surface, thickness = 1.dp)
+                                    HorizontalDivider(color = DashboardColors.surface(), thickness = 1.dp)
                                     Spacer(Modifier.height(12.dp))
 
                                     Row(
@@ -205,16 +239,16 @@ Column(modifier = Modifier.fillMaxSize()) {
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
                                         Column {
-                                            Text("PRINCIPAL", fontSize = 9.sp, color = DashboardColors.textSecondary, letterSpacing = 0.8.sp)
-                                            Text(emi.principal.toINR(), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary)
+                                            Text("PRINCIPAL", fontSize = 9.sp, color = DashboardColors.textSecondary(), letterSpacing = 0.8.sp)
+                                            Text(emi.principal.toINR(), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary())
                                         }
                                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                            Text("RATE", fontSize = 9.sp, color = DashboardColors.textSecondary, letterSpacing = 0.8.sp)
-                                            Text("${emi.interestRate}% p.a.", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary)
+                                            Text("RATE", fontSize = 9.sp, color = DashboardColors.textSecondary(), letterSpacing = 0.8.sp)
+                                            Text("${emi.interestRate}% p.a.", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary())
                                         }
                                         Column(horizontalAlignment = Alignment.End) {
-                                            Text("TENURE", fontSize = 9.sp, color = DashboardColors.textSecondary, letterSpacing = 0.8.sp)
-                                            Text("${emi.termMonths} mos", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary)
+                                            Text("TENURE", fontSize = 9.sp, color = DashboardColors.textSecondary(), letterSpacing = 0.8.sp)
+                                            Text("${emi.termMonths} mos", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary())
                                         }
                                     }
 
@@ -222,7 +256,7 @@ Column(modifier = Modifier.fillMaxSize()) {
 
                                     Surface(
                                         shape = RoundedCornerShape(12.dp),
-                                        color = DashboardColors.surface,
+                                        color = DashboardColors.surface(),
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
                                         Row(
@@ -232,7 +266,7 @@ Column(modifier = Modifier.fillMaxSize()) {
                                             horizontalArrangement = Arrangement.SpaceBetween,
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            Text("Monthly EMI Payment", fontSize = 12.sp, color = DashboardColors.textSecondary, fontWeight = FontWeight.Medium)
+                                            Text("Monthly EMI Payment", fontSize = 12.sp, color = DashboardColors.textSecondary(), fontWeight = FontWeight.Medium)
                                             Text(
                                                 text = emi.emiAmount.toINR(),
                                                 fontSize = 17.sp,
@@ -254,20 +288,8 @@ Column(modifier = Modifier.fillMaxSize()) {
         AddEmiDialog(
             onDismiss = { showDialog = false },
             onAdd = { name, principal, rate, tenure, emiAmount ->
-                scope.launch {
-                    repo.addEmi(
-                        Emi(
-                            name = name,
-                            principal = principal,
-                            interestRate = rate,
-                            termMonths = tenure,
-                            emiAmount = emiAmount,
-                            startDate = System.currentTimeMillis(),
-                            nextDueDate = System.currentTimeMillis() + 30L * 24 * 3600 * 1000
-                        )
-                    )
-                    showDialog = false
-                }
+                onAddEmi(name, principal, rate, tenure, emiAmount)
+                showDialog = false
             }
         )
     }
@@ -291,23 +313,23 @@ fun AddEmiDialog(onDismiss: () -> Unit, onAdd: (String, Double, Double, Int, Dou
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = DashboardColors.surface,
+        containerColor = DashboardColors.surface(),
         shape = RoundedCornerShape(22.dp),
-        title = { Text("Add Loan / EMI", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary) },
+        title = { Text("Add Loan / EMI", fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary()) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Loan Name (e.g. HDFC Home Loan)", color = DashboardColors.textSecondary) },
+                    label = { Text("Loan Name (e.g. HDFC Home Loan)", color = DashboardColors.textSecondary()) },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Amber,
-                        unfocusedBorderColor = DashboardColors.border,
-                        focusedTextColor = DashboardColors.textPrimary,
-                        unfocusedTextColor = DashboardColors.textPrimary,
+                        unfocusedBorderColor = DashboardColors.border(),
+                        focusedTextColor = DashboardColors.textPrimary(),
+                        unfocusedTextColor = DashboardColors.textPrimary(),
                         cursorColor = Amber,
-                        focusedContainerColor = DashboardColors.surface,
-                        unfocusedContainerColor = DashboardColors.surface
+                        focusedContainerColor = DashboardColors.surface(),
+                        unfocusedContainerColor = DashboardColors.surface()
                     ),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -316,16 +338,16 @@ fun AddEmiDialog(onDismiss: () -> Unit, onAdd: (String, Double, Double, Int, Dou
                 OutlinedTextField(
                     value = principal,
                     onValueChange = { principal = it },
-                    label = { Text("Principal Amount (₹)", color = DashboardColors.textSecondary) },
+                    label = { Text("Principal Amount (₹)", color = DashboardColors.textSecondary()) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Amber,
-                        unfocusedBorderColor = DashboardColors.border,
-                        focusedTextColor = DashboardColors.textPrimary,
-                        unfocusedTextColor = DashboardColors.textPrimary,
+                        unfocusedBorderColor = DashboardColors.border(),
+                        focusedTextColor = DashboardColors.textPrimary(),
+                        unfocusedTextColor = DashboardColors.textPrimary(),
                         cursorColor = Amber,
-                        focusedContainerColor = DashboardColors.surface,
-                        unfocusedContainerColor = DashboardColors.surface
+                        focusedContainerColor = DashboardColors.surface(),
+                        unfocusedContainerColor = DashboardColors.surface()
                     ),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -335,16 +357,16 @@ fun AddEmiDialog(onDismiss: () -> Unit, onAdd: (String, Double, Double, Int, Dou
                     OutlinedTextField(
                         value = rate,
                         onValueChange = { rate = it },
-                        label = { Text("Rate (%)", color = DashboardColors.textSecondary) },
+                        label = { Text("Rate (%)", color = DashboardColors.textSecondary()) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Amber,
-                            unfocusedBorderColor = DashboardColors.border,
-                            focusedTextColor = DashboardColors.textPrimary,
-                            unfocusedTextColor = DashboardColors.textPrimary,
+                            unfocusedBorderColor = DashboardColors.border(),
+                            focusedTextColor = DashboardColors.textPrimary(),
+                            unfocusedTextColor = DashboardColors.textPrimary(),
                             cursorColor = Amber,
-                            focusedContainerColor = DashboardColors.surface,
-                            unfocusedContainerColor = DashboardColors.surface
+                            focusedContainerColor = DashboardColors.surface(),
+                            unfocusedContainerColor = DashboardColors.surface()
                         ),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.weight(1f)
@@ -352,16 +374,16 @@ fun AddEmiDialog(onDismiss: () -> Unit, onAdd: (String, Double, Double, Int, Dou
                     OutlinedTextField(
                         value = tenure,
                         onValueChange = { tenure = it },
-                        label = { Text("Months", color = DashboardColors.textSecondary) },
+                        label = { Text("Months", color = DashboardColors.textSecondary()) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Amber,
-                            unfocusedBorderColor = DashboardColors.border,
-                            focusedTextColor = DashboardColors.textPrimary,
-                            unfocusedTextColor = DashboardColors.textPrimary,
+                            unfocusedBorderColor = DashboardColors.border(),
+                            focusedTextColor = DashboardColors.textPrimary(),
+                            unfocusedTextColor = DashboardColors.textPrimary(),
                             cursorColor = Amber,
-                            focusedContainerColor = DashboardColors.surface,
-                            unfocusedContainerColor = DashboardColors.surface
+                            focusedContainerColor = DashboardColors.surface(),
+                            unfocusedContainerColor = DashboardColors.surface()
                         ),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.weight(1f)
@@ -372,7 +394,7 @@ fun AddEmiDialog(onDismiss: () -> Unit, onAdd: (String, Double, Double, Int, Dou
                     Surface(
                         shape = RoundedCornerShape(12.dp),
                         color = Amber.copy(alpha = 0.15f),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Amber.copy(alpha = 0.35f)),
+                        border = BorderStroke(1.dp, Amber.copy(alpha = 0.35f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
@@ -398,10 +420,65 @@ fun AddEmiDialog(onDismiss: () -> Unit, onAdd: (String, Double, Double, Int, Dou
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Amber),
                 shape = RoundedCornerShape(12.dp)
-            ) { Text("Save Loan", fontWeight = FontWeight.Bold, color = DashboardColors.bg) }
+            ) { Text("Save Loan", fontWeight = FontWeight.Bold, color = DashboardColors.bg()) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel", color = DashboardColors.textSecondary) }
+            TextButton(onClick = onDismiss) { Text("Cancel", color = DashboardColors.textSecondary()) }
         }
     )
 }
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "EmiScreen Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+private fun EmiScreenLightPreview() {
+    FinanceAppTheme {
+        EmiScreenContent(
+            uiState = EmiUiState(
+                emis = listOf(
+                    Emi(id = 1, name = "Home Loan", principal = 3500000.0, interestRate = 8.5, termMonths = 240, emiAmount = 30385.0, startDate = 0L, nextDueDate = 0L),
+                    Emi(id = 2, name = "Car Loan", principal = 600000.0, interestRate = 9.0, termMonths = 60, emiAmount = 12455.0, startDate = 0L, nextDueDate = 0L)
+                ),
+                totalMonthlyEmi = 42840.0,
+                totalPrincipal = 4100000.0
+            ),
+            onAddEmi = { _, _, _, _, _ -> },
+            onDeleteEmi = {},
+            onBack = {}
+        )
+    }
+}
+
+@Preview(name = "EmiScreen Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun EmiScreenDarkPreview() {
+    FinanceAppTheme {
+        EmiScreenContent(
+            uiState = EmiUiState(
+                emis = listOf(
+                    Emi(id = 1, name = "Home Loan", principal = 3500000.0, interestRate = 8.5, termMonths = 240, emiAmount = 30385.0, startDate = 0L, nextDueDate = 0L),
+                    Emi(id = 2, name = "Car Loan", principal = 600000.0, interestRate = 9.0, termMonths = 60, emiAmount = 12455.0, startDate = 0L, nextDueDate = 0L)
+                ),
+                totalMonthlyEmi = 42840.0,
+                totalPrincipal = 4100000.0
+            ),
+            onAddEmi = { _, _, _, _, _ -> },
+            onDeleteEmi = {},
+            onBack = {}
+        )
+    }
+}
+
+@Preview(name = "AddEmiDialog Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "AddEmiDialog Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun AddEmiDialogPreview() {
+    FinanceAppTheme {
+        AddEmiDialog(
+            onDismiss = {},
+            onAdd = { _, _, _, _, _ -> }
+        )
+    }
+}
+

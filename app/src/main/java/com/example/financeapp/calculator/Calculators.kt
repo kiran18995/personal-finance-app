@@ -197,8 +197,10 @@ object InflationCalculator {
 }
 
 data class InflationResult(
-    val futureEquivalent: Double,  // How much you need in future to have same purchasing power
-    val presentValue: Double       // What your money will be worth in today's terms
+    // How much you need in future to have same purchasing power
+    val futureEquivalent: Double,
+    // What your money will be worth in today's terms
+    val presentValue: Double
 )
 
 object LoanComparisonCalculator {

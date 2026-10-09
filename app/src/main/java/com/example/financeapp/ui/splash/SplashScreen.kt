@@ -15,6 +15,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.content.res.Configuration
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.financeapp.ui.theme.FinanceAppTheme
+import com.example.financeapp.ui.components.AppLogo
 import kotlinx.coroutines.delay
 
 @Composable
@@ -45,7 +49,7 @@ fun SplashScreen(
     val isDark = androidx.compose.foundation.isSystemInDarkTheme()
     val bgColor = if (isDark) Color(0xFF0A0A0F) else Color.White
     val textPrimary = if (isDark) Color.White else Color(0xFF0A0A0F)
-    val glowColor1 = Color(0xFF6D28D9)
+    val glowColor1 = Color(0xFF1D4ED8)
     val glowColor2 = Color(0xFF3B82F6)
 
     Box(
@@ -80,40 +84,21 @@ fun SplashScreen(
                 scaleY = scaleAnim.value
             }
         ) {
-            // Elegant premium icon replacement
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(glowColor1, glowColor2)
-                        ),
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "K",
-                    color = Color.White,
-                    fontSize = 48.sp,
-                    fontWeight = FontWeight.Black
-                )
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                text = "Kiran's Finance",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = textPrimary,
-                letterSpacing = 1.sp
-            )
-            Text(
-                text = "POWERED BY GEMINI",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = textPrimary.copy(alpha = 0.5f),
-                letterSpacing = 2.sp
-            )
+            AppLogo(size = 92.dp, showTitle = true, titleText = "My Finance")
         }
     }
+}
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "Splash Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Composable
+private fun SplashScreenLightPreview() {
+    FinanceAppTheme { SplashScreen(onSplashFinished = {}) }
+}
+
+@Preview(name = "Splash Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun SplashScreenDarkPreview() {
+    FinanceAppTheme { SplashScreen(onSplashFinished = {}) }
 }

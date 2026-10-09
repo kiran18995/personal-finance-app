@@ -9,10 +9,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 
-class AuthRepository {
+interface AuthRepository {
+    val currentUser: Flow<FirebaseUser?>
+    fun isLoggedIn(): Boolean
+    suspend fun signInWithEmail(email: String, password: String): Result<FirebaseUser>
+    suspend fun signUpWithEmail(email: String, password: String): Result<FirebaseUser>
+    fun signOut()
+    fun getUid(): String?
+}
+
+class AuthRepositoryImpl : AuthRepository {
     private val auth = FirebaseAuth.getInstance()
 
-    val currentUser: Flow<FirebaseUser?> = callbackFlow {
+    override val currentUser: Flow<FirebaseUser?> = callbackFlow {
         val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             trySend(firebaseAuth.currentUser)
         }
@@ -22,11 +31,11 @@ class AuthRepository {
         }
     }
 
-    fun isLoggedIn(): Boolean {
+    override fun isLoggedIn(): Boolean {
         return auth.currentUser != null
     }
 
-    suspend fun signInWithEmail(email: String, password: String): Result<FirebaseUser> {
+    override suspend fun signInWithEmail(email: String, password: String): Result<FirebaseUser> {
         return suspendCancellableCoroutine { cont ->
             auth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener { result ->
@@ -39,7 +48,7 @@ class AuthRepository {
         }
     }
 
-    suspend fun signUpWithEmail(email: String, password: String): Result<FirebaseUser> {
+    override suspend fun signUpWithEmail(email: String, password: String): Result<FirebaseUser> {
         return suspendCancellableCoroutine { cont ->
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener { result ->
@@ -52,11 +61,11 @@ class AuthRepository {
         }
     }
 
-    fun signOut() {
+    override fun signOut() {
         auth.signOut()
     }
-    
-    fun getUid(): String? {
+
+    override fun getUid(): String? {
         return auth.currentUser?.uid
     }
 }

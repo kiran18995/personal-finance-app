@@ -16,6 +16,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.financeapp.data.Card
+import android.content.res.Configuration
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.financeapp.ui.theme.FinanceAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -253,3 +256,18 @@ fun AddCardScreen(
         }
     }
 }
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "AddCardScreen Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "AddCardScreen Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun AddCardScreenPreview() {
+    FinanceAppTheme {
+        AddCardScreen(
+            onDismiss = {},
+            onSave = {}
+        )
+    }
+}
+

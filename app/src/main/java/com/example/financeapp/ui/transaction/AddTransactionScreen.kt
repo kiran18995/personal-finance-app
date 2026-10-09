@@ -1,8 +1,7 @@
 package com.example.financeapp.ui.transaction
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
+import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,8 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -35,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import android.widget.Toast
 import com.example.financeapp.ui.theme.*
 import com.example.financeapp.ui.dashboard.DashboardColors
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,7 +49,7 @@ fun AddTransactionScreen(
     val activeAccount = selectedAccount ?: "Primary Bank"
 
     val isIncome = selectedType == "Income"
-    val accentColor = if (isIncome) Emerald else Violet500
+    val accentColor = if (isIncome) Emerald else Blue500
 
     val categories = listOf(
         "Food", "Grocery", "Transport", "Shopping", "Bills",
@@ -62,7 +60,7 @@ fun AddTransactionScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DashboardColors.bg)
+            .background(DashboardColors.bg())
     ) {
         
 Column(
@@ -82,17 +80,17 @@ Column(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(DashboardColors.surface)
-                        .border(1.dp, DashboardColors.border, CircleShape)
+                        .background(DashboardColors.surface())
+                        .border(1.dp, DashboardColors.border(), CircleShape)
                 ) {
-                    Icon(Icons.Filled.Close, contentDescription = "Close", tint = DashboardColors.textPrimary, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Filled.Close, contentDescription = "Close", tint = DashboardColors.textPrimary(), modifier = Modifier.size(18.dp))
                 }
 
                 Text(
                     text = "New Transaction",
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
-                    color = DashboardColors.textPrimary
+                    color = DashboardColors.textPrimary()
                 )
 
                 IconButton(
@@ -102,10 +100,10 @@ Column(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(DashboardColors.surface)
-                        .border(1.dp, DashboardColors.border, CircleShape)
+                        .background(DashboardColors.surface())
+                        .border(1.dp, DashboardColors.border(), CircleShape)
                 ) {
-                    Icon(Icons.Filled.Info, contentDescription = "Info", tint = DashboardColors.textSecondary, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Filled.Info, contentDescription = "Info", tint = DashboardColors.textSecondary(), modifier = Modifier.size(18.dp))
                 }
             }
 
@@ -115,8 +113,8 @@ Column(
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                color = DashboardColors.surface,
-                border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border)
+                color = DashboardColors.surface(),
+                border = BorderStroke(1.dp, DashboardColors.border())
             ) {
                 Row(
                     modifier = Modifier
@@ -144,7 +142,7 @@ Column(
                                 text = type,
                                 fontSize = 13.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) Color.White else DashboardColors.textSecondary
+                                color = if (isSelected) Color.White else DashboardColors.textSecondary()
                             )
                         }
                     }
@@ -159,8 +157,8 @@ Column(
                     .fillMaxWidth()
                     .shadow(12.dp, RoundedCornerShape(22.dp), spotColor = accentColor.copy(alpha = 0.2f)),
                 shape = RoundedCornerShape(22.dp),
-                color = DashboardColors.surface,
-                border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border)
+                color = DashboardColors.surface(),
+                border = BorderStroke(1.dp, DashboardColors.border())
             ) {
                 Column(
                     modifier = Modifier
@@ -172,7 +170,7 @@ Column(
                         text = if (isIncome) "INCOME AMOUNT" else "EXPENSE AMOUNT",
                         fontSize = 10.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = DashboardColors.textSecondary,
+                        color = DashboardColors.textSecondary(),
                         letterSpacing = 1.sp
                     )
 
@@ -193,7 +191,7 @@ Column(
                             text = amount,
                             fontSize = 44.sp,
                             fontWeight = FontWeight.ExtraBold,
-                            color = DashboardColors.textPrimary
+                            color = DashboardColors.textPrimary()
                         )
                     }
 
@@ -207,8 +205,8 @@ Column(
                         listOf(100, 500, 1000, 2000, 5000).forEach { addVal ->
                             Surface(
                                 shape = RoundedCornerShape(10.dp),
-                                color = DashboardColors.surface,
-                                border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border),
+                                color = DashboardColors.surface(),
+                                border = BorderStroke(1.dp, DashboardColors.border()),
                                 modifier = Modifier.clickable {
                                     val current = amount.toDoubleOrNull() ?: 0.0
                                     amount = (current + addVal).toInt().toString()
@@ -218,7 +216,7 @@ Column(
                                     text = "+₹$addVal",
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = DashboardColors.textSecondary,
+                                    color = DashboardColors.textSecondary(),
                                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                                 )
                             }
@@ -236,8 +234,8 @@ Column(
                     .clip(RoundedCornerShape(16.dp))
                     .clickable { onNavigateToChooseAccount() },
                 shape = RoundedCornerShape(16.dp),
-                color = DashboardColors.surface,
-                border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border)
+                color = DashboardColors.surface(),
+                border = BorderStroke(1.dp, DashboardColors.border())
             ) {
                 Row(
                     modifier = Modifier
@@ -254,21 +252,21 @@ Column(
                             modifier = Modifier
                                 .size(34.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Violet900.copy(alpha = 0.5f)),
+                                .background(Blue900.copy(alpha = 0.5f)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Filled.AccountBalanceWallet, contentDescription = null, tint = Violet400, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Filled.AccountBalanceWallet, contentDescription = null, tint = Blue400, modifier = Modifier.size(18.dp))
                         }
                         Column {
-                            Text("Payment Account", fontSize = 11.sp, color = DashboardColors.textSecondary)
-                            Text(activeAccount, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary)
+                            Text("Payment Account", fontSize = 11.sp, color = DashboardColors.textSecondary())
+                            Text(activeAccount, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary())
                         }
                     }
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Change", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Violet400)
+                        Text("Change", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Blue400)
                         Spacer(modifier = Modifier.width(4.dp))
-                        Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = Violet400, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = Blue400, modifier = Modifier.size(16.dp))
                     }
                 }
             }
@@ -290,10 +288,10 @@ Column(
                             .clip(RoundedCornerShape(14.dp))
                             .clickable { selectedCategory = category },
                         shape = RoundedCornerShape(14.dp),
-                        color = if (isSelected) Violet700.copy(alpha = 0.8f) else DashboardColors.surface,
-                        border = androidx.compose.foundation.BorderStroke(
+                        color = if (isSelected) Blue700.copy(alpha = 0.8f) else DashboardColors.surface(),
+                        border = BorderStroke(
                             1.dp,
-                            if (isSelected) Violet400 else DashboardColors.surface
+                            if (isSelected) Blue400 else DashboardColors.surface()
                         )
                     ) {
                         Column(
@@ -304,7 +302,7 @@ Column(
                             Icon(
                                 icon,
                                 contentDescription = category,
-                                tint = if (isSelected) Color.White else DashboardColors.textSecondary,
+                                tint = if (isSelected) Color.White else DashboardColors.textSecondary(),
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
@@ -312,7 +310,7 @@ Column(
                                 text = category,
                                 fontSize = 10.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isSelected) Color.White else DashboardColors.textSecondary,
+                                color = if (isSelected) Color.White else DashboardColors.textSecondary(),
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -353,7 +351,7 @@ Column(
                     .fillMaxWidth()
                     .height(52.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isIncome) Emerald else Violet600
+                    containerColor = if (isIncome) Emerald else Blue600
                 ),
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -402,15 +400,15 @@ private fun ModernNumpad(
                                 }
                             },
                         shape = RoundedCornerShape(12.dp),
-                        color = DashboardColors.surface,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.surface)
+                        color = DashboardColors.surface(),
+                        border = BorderStroke(1.dp, DashboardColors.surface())
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
                                 text = key,
                                 fontSize = if (key == "⌫" || key == "C") 16.sp else 19.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (key == "⌫" || key == "C") Violet400 else DashboardColors.textPrimary
+                                color = if (key == "⌫" || key == "C") Blue400 else DashboardColors.textPrimary()
                             )
                         }
                     }
@@ -440,3 +438,18 @@ private fun categoryIcon(category: String): ImageVector {
         else -> Icons.Filled.Category
     }
 }
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "AddTransactionScreen Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "AddTransactionScreen Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun AddTransactionScreenPreview() {
+    FinanceAppTheme {
+        AddTransactionScreen(
+            onDismiss = {},
+            selectedAccount = "HDFC Savings Account"
+        )
+    }
+}
+

@@ -16,6 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.financeapp.data.ParsedTransaction
+import android.content.res.Configuration
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.financeapp.ui.theme.FinanceAppTheme
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -178,3 +181,24 @@ fun ReviewTransactionsScreen(
         }
     }
 }
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "ReviewTransactionsScreen Light", uiMode = Configuration.UI_MODE_NIGHT_NO, showBackground = true)
+@Preview(name = "ReviewTransactionsScreen Dark", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+private fun ReviewTransactionsScreenPreview() {
+    FinanceAppTheme {
+        ReviewTransactionsScreen(
+            transactions = listOf(
+                ParsedTransaction(description = "Zomato Payment", amount = 450.0, isIncome = false, date = System.currentTimeMillis()),
+                ParsedTransaction(description = "Salary Credit", amount = 85000.0, isIncome = true, date = System.currentTimeMillis())
+            ),
+            finalBalance = 120500.0,
+            onConfirm = {},
+            onCancel = {}
+        )
+    }
+}
+
+

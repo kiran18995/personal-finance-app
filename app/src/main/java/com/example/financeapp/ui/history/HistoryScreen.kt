@@ -1,8 +1,8 @@
 package com.example.financeapp.ui.history
 
-import androidx.compose.animation.*
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.Canvas
+import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,20 +23,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.widget.Toast
+import androidx.compose.ui.graphics.graphicsLayer
 import com.example.financeapp.ui.dashboard.RecentTransaction
 import com.example.financeapp.ui.theme.*
 import com.example.financeapp.ui.dashboard.DashboardColors
+import androidx.compose.ui.tooling.preview.Preview
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -103,10 +102,25 @@ fun HistoryScreen(
         }
     }
 
+    var isVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { isVisible = true }
+
+    val alpha1 by animateFloatAsState(if (isVisible) 1f else 0f, tween(800, 100, FastOutSlowInEasing), label = "alpha1")
+    val offsetY1 by animateFloatAsState(if (isVisible) 0f else 60f, tween(800, 100, FastOutSlowInEasing), label = "y1")
+
+    val alpha2 by animateFloatAsState(if (isVisible) 1f else 0f, tween(800, 200, FastOutSlowInEasing), label = "alpha2")
+    val offsetY2 by animateFloatAsState(if (isVisible) 0f else 60f, tween(800, 200, FastOutSlowInEasing), label = "y2")
+
+    val alpha3 by animateFloatAsState(if (isVisible) 1f else 0f, tween(800, 300, FastOutSlowInEasing), label = "alpha3")
+    val offsetY3 by animateFloatAsState(if (isVisible) 0f else 60f, tween(800, 300, FastOutSlowInEasing), label = "y3")
+
+    val alpha4 by animateFloatAsState(if (isVisible) 1f else 0f, tween(800, 400, FastOutSlowInEasing), label = "alpha4")
+    val offsetY4 by animateFloatAsState(if (isVisible) 0f else 60f, tween(800, 400, FastOutSlowInEasing), label = "y4")
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DashboardColors.bg)
+            .background(DashboardColors.bg())
     ) {
         
 Column(
@@ -118,7 +132,8 @@ Column(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                    .padding(horizontal = 20.dp, vertical = 12.dp)
+                    .graphicsLayer { alpha = alpha1; translationY = offsetY1 },
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -127,13 +142,13 @@ Column(
                         text = "Transactions",
                         fontSize = 26.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = DashboardColors.textPrimary,
+                        color = DashboardColors.textPrimary(),
                         letterSpacing = (-0.5).sp
                     )
                     Text(
                         text = "${filteredTransactions.size} records found",
                         fontSize = 12.sp,
-                        color = DashboardColors.textSecondary,
+                        color = DashboardColors.textSecondary(),
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -141,8 +156,8 @@ Column(
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = DashboardColors.surface,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border)
+                        color = DashboardColors.surface(),
+                        border = BorderStroke(1.dp, DashboardColors.border())
                     ) {
                         IconButton(
                             onClick = onAddTransaction,
@@ -153,8 +168,8 @@ Column(
                     }
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = DashboardColors.surface,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border)
+                        color = DashboardColors.surface(),
+                        border = BorderStroke(1.dp, DashboardColors.border())
                     ) {
                         IconButton(
                             onClick = {
@@ -162,18 +177,20 @@ Column(
                             },
                             modifier = Modifier.size(38.dp)
                         ) {
-                            Icon(Icons.Filled.FileDownload, contentDescription = "Export", tint = Violet400, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Filled.FileDownload, contentDescription = "Export", tint = Blue400, modifier = Modifier.size(18.dp))
                         }
                     }
                 }
             }
 
             // Financial Summary Card
-            SummaryFlowCard(
-                totalIncome = totalIncome,
-                totalExpense = totalExpense,
-                netCashFlow = netCashFlow
-            )
+            Box(modifier = Modifier.graphicsLayer { alpha = alpha2; translationY = offsetY2 }) {
+                SummaryFlowCard(
+                    totalIncome = totalIncome,
+                    totalExpense = totalExpense,
+                    netCashFlow = netCashFlow
+                )
+            }
 
             Spacer(modifier = Modifier.height(14.dp))
 
@@ -183,8 +200,8 @@ Column(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(16.dp),
-                color = DashboardColors.surface,
-                border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border)
+                color = DashboardColors.surface(),
+                border = BorderStroke(1.dp, DashboardColors.border())
             ) {
                 Row(
                     modifier = Modifier
@@ -192,27 +209,27 @@ Column(
                         .padding(horizontal = 14.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Outlined.Search, contentDescription = null, tint = DashboardColors.textSecondary, modifier = Modifier.size(20.dp))
+                    Icon(Icons.Outlined.Search, contentDescription = null, tint = DashboardColors.textSecondary(), modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(10.dp))
                     TextField(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
-                        placeholder = { Text("Search transactions, accounts, notes...", fontSize = 13.sp, color = DashboardColors.textSecondary) },
+                        placeholder = { Text("Search transactions, accounts, notes...", fontSize = 13.sp, color = DashboardColors.textSecondary()) },
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
-                            focusedTextColor = DashboardColors.textPrimary,
-                            unfocusedTextColor = DashboardColors.textPrimary,
-                            cursorColor = Violet400
+                            focusedTextColor = DashboardColors.textPrimary(),
+                            unfocusedTextColor = DashboardColors.textPrimary(),
+                            cursorColor = Blue400
                         ),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
                     if (searchQuery.isNotEmpty()) {
                         IconButton(onClick = { searchQuery = "" }, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.Filled.Close, contentDescription = "Clear", tint = DashboardColors.textSecondary, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Filled.Close, contentDescription = "Clear", tint = DashboardColors.textSecondary(), modifier = Modifier.size(16.dp))
                         }
                     }
                 }
@@ -232,10 +249,10 @@ Column(
                     val isSelected = selectedFilter == type
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = if (isSelected) Violet700 else DashboardColors.surface,
-                        border = androidx.compose.foundation.BorderStroke(
+                        color = if (isSelected) Blue700 else DashboardColors.surface(),
+                        border = BorderStroke(
                             1.dp,
-                            if (isSelected) Violet500 else DashboardColors.border
+                            if (isSelected) Blue500 else DashboardColors.border()
                         ),
                         modifier = Modifier.clickable { selectedFilter = type }
                     ) {
@@ -243,7 +260,7 @@ Column(
                             text = type,
                             fontSize = 12.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            color = if (isSelected) Color.White else DashboardColors.textSecondary,
+                            color = if (isSelected) Color.White else DashboardColors.textSecondary(),
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp)
                         )
                     }
@@ -254,10 +271,10 @@ Column(
                     val isSelected = selectedCategoryFilter == cat
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = if (isSelected) Sapphire.copy(alpha = 0.8f) else DashboardColors.surface,
-                        border = androidx.compose.foundation.BorderStroke(
+                        color = if (isSelected) Sapphire.copy(alpha = 0.8f) else DashboardColors.surface(),
+                        border = BorderStroke(
                             1.dp,
-                            if (isSelected) Sapphire else DashboardColors.border
+                            if (isSelected) Sapphire else DashboardColors.border()
                         ),
                         modifier = Modifier.clickable {
                             selectedCategoryFilter = if (isSelected) null else cat
@@ -267,7 +284,7 @@ Column(
                             text = cat,
                             fontSize = 12.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            color = if (isSelected) Color.White else DashboardColors.textSecondary,
+                            color = if (isSelected) Color.White else DashboardColors.textSecondary(),
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp)
                         )
                     }
@@ -292,17 +309,17 @@ Column(
                             modifier = Modifier
                                 .size(72.dp)
                                 .clip(CircleShape)
-                                .background(DashboardColors.surface)
-                                .border(1.dp, DashboardColors.border, CircleShape),
+                                .background(DashboardColors.surface())
+                                .border(1.dp, DashboardColors.border(), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Filled.SearchOff, contentDescription = null, tint = DashboardColors.textSecondary, modifier = Modifier.size(32.dp))
+                            Icon(Icons.Filled.SearchOff, contentDescription = null, tint = DashboardColors.textSecondary(), modifier = Modifier.size(32.dp))
                         }
-                        Text("No matching transactions", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary)
+                        Text("No matching transactions", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = DashboardColors.textPrimary())
                         Text(
                             "Try clearing your search or removing category filters.",
                             fontSize = 13.sp,
-                            color = DashboardColors.textSecondary,
+                            color = DashboardColors.textSecondary(),
                             textAlign = TextAlign.Center
                         )
                         if (searchQuery.isNotEmpty() || selectedCategoryFilter != null || selectedFilter != "All") {
@@ -313,7 +330,7 @@ Column(
                                     selectedFilter = "All"
                                 }
                             ) {
-                                Text("Reset Filters", color = Violet400, fontWeight = FontWeight.Bold)
+                                Text("Reset Filters", color = Blue400, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -337,7 +354,7 @@ Column(
                                     text = dateGroup,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = DashboardColors.textSecondary,
+                                    color = DashboardColors.textSecondary(),
                                     letterSpacing = 0.3.sp
                                 )
                                 val groupNet = txList.sumOf { if (it.isIncome) it.amount else -it.amount }
@@ -367,8 +384,8 @@ Column(
     selectedTxForDetails?.let { tx ->
         ModalBottomSheet(
             onDismissRequest = { selectedTxForDetails = null },
-            containerColor = DashboardColors.surface,
-            contentColor = DashboardColors.textPrimary,
+            containerColor = DashboardColors.surface(),
+            contentColor = DashboardColors.textPrimary(),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
             Column(
@@ -394,12 +411,12 @@ Column(
                     text = tx.title,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = DashboardColors.textPrimary
+                    color = DashboardColors.textPrimary()
                 )
                 Text(
                     text = if (tx.isIncome) "Income Received" else "Payment Made",
                     fontSize = 12.sp,
-                    color = DashboardColors.textSecondary
+                    color = DashboardColors.textSecondary()
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -416,8 +433,8 @@ Column(
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    color = DashboardColors.surface,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border)
+                    color = DashboardColors.surface(),
+                    border = BorderStroke(1.dp, DashboardColors.border())
                 ) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         DetailRow("Category", tx.subtitle)
@@ -437,7 +454,7 @@ Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Violet600),
+                    colors = ButtonDefaults.buttonColors(containerColor = Blue600),
                     shape = RoundedCornerShape(14.dp)
                 ) {
                     Icon(Icons.Filled.Share, contentDescription = null, modifier = Modifier.size(16.dp))
@@ -450,13 +467,13 @@ Column(
 }
 
 @Composable
-private fun DetailRow(label: String, value: String, valueColor: Color = DashboardColors.textPrimary) {
+private fun DetailRow(label: String, value: String, valueColor: Color = DashboardColors.textPrimary()) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(label, fontSize = 12.sp, color = DashboardColors.textSecondary)
+        Text(label, fontSize = 12.sp, color = DashboardColors.textSecondary())
         Text(value, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = valueColor)
     }
 }
@@ -472,10 +489,10 @@ private fun SummaryFlowCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .shadow(8.dp, RoundedCornerShape(20.dp), spotColor = Violet500.copy(alpha = 0.15f)),
+            .shadow(8.dp, RoundedCornerShape(20.dp), spotColor = Blue500.copy(alpha = 0.15f)),
         shape = RoundedCornerShape(20.dp),
-        color = DashboardColors.surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.border)
+        color = DashboardColors.surface(),
+        border = BorderStroke(1.dp, DashboardColors.border())
     ) {
         Row(
             modifier = Modifier
@@ -485,7 +502,7 @@ private fun SummaryFlowCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("TOTAL INFLOW", fontSize = 9.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary, letterSpacing = 0.8.sp)
+                Text("TOTAL INFLOW", fontSize = 9.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary(), letterSpacing = 0.8.sp)
                 Spacer(modifier = Modifier.height(2.dp))
                 Text("+₹${String.format("%,.0f", totalIncome)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Emerald)
             }
@@ -494,7 +511,7 @@ private fun SummaryFlowCard(
                 modifier = Modifier
                     .width(1.dp)
                     .height(36.dp)
-                    .background(DashboardColors.border)
+                    .background(DashboardColors.border())
             )
 
             Column(
@@ -502,7 +519,7 @@ private fun SummaryFlowCard(
                     .weight(1f)
                     .padding(start = 12.dp)
             ) {
-                Text("TOTAL OUTFLOW", fontSize = 9.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary, letterSpacing = 0.8.sp)
+                Text("TOTAL OUTFLOW", fontSize = 9.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary(), letterSpacing = 0.8.sp)
                 Spacer(modifier = Modifier.height(2.dp))
                 Text("-₹${String.format("%,.0f", totalExpense)}", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Crimson)
             }
@@ -511,14 +528,14 @@ private fun SummaryFlowCard(
                 modifier = Modifier
                     .width(1.dp)
                     .height(36.dp)
-                    .background(DashboardColors.border)
+                    .background(DashboardColors.border())
             )
 
             Column(
                 modifier = Modifier.weight(1.1f),
                 horizontalAlignment = Alignment.End
             ) {
-                Text("NET FLOW", fontSize = 9.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary, letterSpacing = 0.8.sp)
+                Text("NET FLOW", fontSize = 9.sp, fontWeight = FontWeight.SemiBold, color = DashboardColors.textSecondary(), letterSpacing = 0.8.sp)
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = "${if (netCashFlow >= 0) "+" else "-"}₹${String.format("%,.0f", Math.abs(netCashFlow))}",
@@ -544,8 +561,8 @@ private fun LuxuryTransactionCard(
             .clip(RoundedCornerShape(16.dp))
             .bounceClick(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        color = DashboardColors.surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, DashboardColors.surface)
+        color = DashboardColors.surface(),
+        border = BorderStroke(1.dp, DashboardColors.surface())
     ) {
         Row(
             modifier = Modifier
@@ -558,10 +575,10 @@ private fun LuxuryTransactionCard(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(CircleShape)
-                    .background(if (tx.isIncome) EmeraldDim.copy(alpha = 0.35f) else DashboardColors.surface)
+                    .background(if (tx.isIncome) EmeraldDim.copy(alpha = 0.35f) else DashboardColors.surface())
                     .border(
                         1.dp,
-                        if (tx.isIncome) Emerald.copy(alpha = 0.4f) else DashboardColors.border.copy(alpha = 0.4f),
+                        if (tx.isIncome) Emerald.copy(alpha = 0.4f) else DashboardColors.border().copy(alpha = 0.4f),
                         CircleShape
                     ),
                 contentAlignment = Alignment.Center
@@ -577,7 +594,7 @@ private fun LuxuryTransactionCard(
                     text = tx.title,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = DashboardColors.textPrimary,
+                    color = DashboardColors.textPrimary(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -589,13 +606,13 @@ private fun LuxuryTransactionCard(
                     if (tx.account.isNotBlank()) {
                         Surface(
                             shape = RoundedCornerShape(6.dp),
-                            color = DashboardColors.surface
+                            color = DashboardColors.surface()
                         ) {
                             Text(
                                 text = tx.account,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Violet300,
+                                color = Blue300,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                             )
                         }
@@ -603,7 +620,7 @@ private fun LuxuryTransactionCard(
                     Text(
                         text = timeStr,
                         fontSize = 11.sp,
-                        color = DashboardColors.textSecondary
+                        color = DashboardColors.textSecondary()
                     )
                 }
             }
@@ -614,7 +631,7 @@ private fun LuxuryTransactionCard(
                     text = "${if (tx.isIncome) "+" else "-"}₹${String.format("%,.2f", tx.amount)}",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (tx.isIncome) Emerald else DashboardColors.textPrimary
+                    color = if (tx.isIncome) Emerald else DashboardColors.textPrimary()
                 )
                 Text(
                     text = if (tx.isIncome) "Credit" else "Debit",
@@ -650,3 +667,22 @@ private fun categoryEmoji(title: String, isIncome: Boolean): String {
         else -> "💳"
     }
 }
+
+// ─── Previews ─────────────────────────────────────────────────────────
+
+@Preview(name = "HistoryScreen Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "HistoryScreen Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun HistoryScreenPreview() {
+    FinanceAppTheme {
+        HistoryScreen(
+            transactions = listOf(
+                RecentTransaction(id = 1, title = "Salary Credit", subtitle = "Monthly Income", amount = 125000.0, isIncome = true, date = System.currentTimeMillis(), account = "HDFC Bank"),
+                RecentTransaction(id = 2, title = "Swiggy Food Order", subtitle = "Food & Dining", amount = 640.0, isIncome = false, date = System.currentTimeMillis(), account = "ICICI Card"),
+                RecentTransaction(id = 3, title = "Uber Ride", subtitle = "Cab Fare", amount = 320.0, isIncome = false, date = System.currentTimeMillis(), account = "HDFC Bank")
+            )
+        )
+    }
+}
+
+

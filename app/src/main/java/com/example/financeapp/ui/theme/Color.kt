@@ -14,14 +14,14 @@ val Ink200   = Color(0xFFB8B2CC)   // Secondary text
 val Ink100   = Color(0xFFECEAF4)   // Primary text
 
 // ─── Primary Accent — Electric Violet ───────────────────────────────
-val Violet900 = Color(0xFF2D0A6B)
-val Violet800 = Color(0xFF3D1491)
-val Violet700 = Color(0xFF5B21B6)
-val Violet600 = Color(0xFF7C3AED)
-val Violet500 = Color(0xFF8B5CF6)
-val Violet400 = Color(0xFFA78BFA)
-val Violet300 = Color(0xFFC4B5FD)
-val Violet200 = Color(0xFFDDD6FE)
+val Blue900 = Color(0xFF1E3A8A)
+val Blue800 = Color(0xFF1E40AF)
+val Blue700 = Color(0xFF1D4ED8)
+val Blue600 = Color(0xFF2563EB)
+val Blue500 = Color(0xFF3B82F6)
+val Blue400 = Color(0xFF60A5FA)
+val Blue300 = Color(0xFF93C5FD)
+val Blue200 = Color(0xFFBFDBFE)
 
 // ─── Semantic Colors ─────────────────────────────────────────────────
 val Emerald   = Color(0xFF10B981)  // Income / positive
@@ -44,15 +44,15 @@ val CatEducation   = Color(0xFFF59E0B)
 val CatOther       = Color(0xFF94A3B8)
 
 // ─── Gradient Presets ────────────────────────────────────────────────
-val HeroPurpleGrad  = listOf(Color(0xFF1A0533), Violet700)
+val HeroPurpleGrad  = listOf(Color(0xFF020617), Blue700)
 val HeroGreenGrad   = listOf(Color(0xFF022C22), Emerald)
 val HeroBlueGrad    = listOf(Color(0xFF0C1445), Sapphire)
 
 // ─── Dark Color Scheme tokens ───────────────────────────────────────
-val DarkPrimary            = Violet500
+val DarkPrimary            = Blue500
 val DarkOnPrimary          = Color.White
-val DarkPrimaryContainer   = Violet900
-val DarkOnPrimaryContainer = Violet300
+val DarkPrimaryContainer   = Blue900
+val DarkOnPrimaryContainer = Blue300
 val DarkSecondary          = Emerald
 val DarkOnSecondary        = Ink800
 val DarkSecondaryContainer = EmeraldDim
@@ -68,10 +68,10 @@ val DarkOutline            = Ink500
 val DarkError              = Crimson
 
 // ─── Light Color Scheme tokens ──────────────────────────────────────
-val LightPrimary            = Violet700
+val LightPrimary            = Blue700
 val LightOnPrimary          = Color.White
-val LightPrimaryContainer   = Violet200
-val LightOnPrimaryContainer = Violet900
+val LightPrimaryContainer   = Blue200
+val LightOnPrimaryContainer = Blue900
 val LightSecondary          = Emerald
 val LightOnSecondary        = Color.White
 val LightSecondaryContainer = Color(0xFFD1FAE5)
@@ -85,8 +85,8 @@ val LightError              = Crimson
 
 // ─── Legacy / Chart aliases ──────────────────────────────────────────
 val PurpleDark   = Ink800
-val PurpleVibrant = Violet700
-val PurpleMid    = Violet500
+val PurpleVibrant = Blue700
+val PurpleMid    = Blue500
 val IncomeGreen  = Emerald
 val ExpenseRed   = Crimson
 val AccentBlue   = Sapphire

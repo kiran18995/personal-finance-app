@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+ktlint
+update_theme.py
+.idea/
